@@ -36,8 +36,8 @@ from controllers import (
 from federated import (
     FedServer,
     LocalClient, FedAvgClient, ScaffoldClient,
-    MOONClient, FedProxClient,
-    DPFedAvgClient, DPFedProxClient,
+    MOONClient, ProxFLClient,
+    DPFedAvgClient, DPProxFLClient,
     _compute_privacy_spent,
 )
 from models import BNN
@@ -240,8 +240,8 @@ def train_all_fl(data):
         ('DP-FedAvg',  DPFedAvgClient,  {'noise_mult':Config.DP_NOISE_MULT}),
         ('Scaffold',   ScaffoldClient,  {}),
         ('MOON',       MOONClient,      {}),
-        ('FedProx',    FedProxClient,   {}),
-        ('DP-FedProx', DPFedProxClient, {'noise_mult':Config.DP_NOISE_MULT}),
+        ('Prox-FL',    ProxFLClient,   {}),
+        ('DP-Prox-FL', DPProxFLClient, {'noise_mult':Config.DP_NOISE_MULT}),
     ]
 
     for name, Cls, kw in specs:
@@ -271,7 +271,7 @@ def train_all_fl(data):
 # ─────────────────────────────────────────────────────────────────────────────
 def exp1_mpc_comparison(fl_models):
     print("\n>>> Exp1: MPC comparison")
-    bnn = fl_models['FedProx']
+    bnn = fl_models['Prox-FL']
     env_fn = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
 
     mpc_methods = {
@@ -341,8 +341,8 @@ def exp2_fl_convergence(data):
         ('DP-FedAvg',  DPFedAvgClient, {'noise_mult':Config.DP_NOISE_MULT}),
         ('Scaffold',   ScaffoldClient, {}),
         ('MOON',       MOONClient,     {}),
-        ('FedProx',    FedProxClient,  {}),
-        ('DP-FedProx', DPFedProxClient,{'noise_mult':Config.DP_NOISE_MULT}),
+        ('Prox-FL',    ProxFLClient,  {}),
+        ('DP-Prox-FL', DPProxFLClient,{'noise_mult':Config.DP_NOISE_MULT}),
     ]
     hist = {'Round': rounds}
     summary = []
@@ -394,7 +394,7 @@ def exp2_fl_convergence(data):
 # ─────────────────────────────────────────────────────────────────────────────
 def exp3_robustness(fl_models):
     print("\n>>> Exp3: Robustness")
-    bnn     = fl_models['FedProx']
+    bnn     = fl_models['Prox-FL']
     env_fn  = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
     scenarios = [
         ('Low Noise',   dict(noise=0.05)),
@@ -431,7 +431,7 @@ def exp3_robustness(fl_models):
 # ─────────────────────────────────────────────────────────────────────────────
 def exp4_ablation(fl_models):
     print("\n>>> Exp4: Ablation")
-    global_bnn = fl_models['FedProx']
+    global_bnn = fl_models['Prox-FL']
     local_bnn  = fl_models['Local Only']
     env_fn = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
     cfgs = {
@@ -465,7 +465,7 @@ def exp5_sensitivity(data):
 
     def _quick_bnn(mu_val):
         srv = FedServer()
-        cli = [FedProxClient(i,mass=MASS_DIST[i]) for i in range(4)]
+        cli = [ProxFLClient(i,mass=MASS_DIST[i]) for i in range(4)]
         for i in range(4):
             for d in data[i]: cli[i].add_data(*d)
         wg = srv.global_model.state_dict()
@@ -490,7 +490,7 @@ def exp5_sensitivity(data):
     # λ sweep uses single pretrained model
     with _t('Exp5 Sensitivity', 'train bnn for lambda sweep'):
         srv = FedServer()
-        cli = [FedProxClient(i) for i in range(4)]
+        cli = [ProxFLClient(i) for i in range(4)]
         for i in range(4):
             for d in data[i]: cli[i].add_data(*d)
         wg = srv.global_model.state_dict()
@@ -551,10 +551,10 @@ def exp6_privacy_utility(data):
         nm    = _eps_to_nm(target_eps)
         label = '∞' if target_eps==float('inf') else str(target_eps)
         for mname, Cls in [('DP-FedAvg',DPFedAvgClient),
-                            ('DP-FedProx',DPFedProxClient)]:
+                            ('DP-Prox-FL',DPProxFLClient)]:
             with _t('Exp6 Privacy', f'eps={label}|{mname}'):
                 if target_eps == float('inf'):
-                    ActCls = FedAvgClient if 'Avg' in mname else FedProxClient
+                    ActCls = FedAvgClient if 'Avg' in mname else ProxFLClient
                     extra  = {}
                 else:
                     ActCls = Cls; extra = {'noise_mult': nm}

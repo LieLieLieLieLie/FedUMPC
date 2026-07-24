@@ -1,16 +1,18 @@
 # FedRMPC
 
-Official implementation of **FedRMPC: Federated Robust Model Predictive Control via Uncertainty and Proximal Regularization**.
+Official implementation of **FedRMPC: Uncertainty-Coupled Federated Learning and Robust Model Predictive Control**.
 
-FedRMPC is a safety-oriented multi-vehicle control framework that combines federated learning, Bayesian neural-network dynamics modeling, epistemic uncertainty quantification, and robust model predictive control. The implementation evaluates a four-vehicle intersection scenario under heterogeneous dynamics, non-IID local data, disturbances, ablations, sensitivity sweeps, and differential-privacy noise.
+FedRMPC is a safety-oriented multi-vehicle control framework that combines federated learning, Bayesian neural-network dynamics modeling, epistemic uncertainty quantification, and robust model predictive control. The physics model supplies the nominal geometric rollout, while the federated BNN contributes uncertainty, learned-rollout disagreement, and adaptive static-obstacle safety inflation. The implementation evaluates independent four-vehicle rollouts in a common intersection map under heterogeneous dynamics, non-IID local data, disturbances, ablations, sensitivity sweeps, and differential-privacy noise.
 
 ## Highlights
 
-- Federated BNN dynamics learning with FedAvg, FedProx, SCAFFOLD, MOON, DP-FedAvg, and DP-FedProx variants.
+- Federated BNN dynamics learning evaluated using Local Only, FedAvg, Prox-FL, SCAFFOLD, MOON, DP-FedAvg, and DP-Prox-FL configurations.
 - Uncertainty-aware MPC using Monte Carlo dropout to penalize high-risk predictions and adapt safety margins.
 - Baselines including Linear MPC, Tube MPC, Stochastic MPC, GP-MPC, and Robust MPC.
 - End-to-end experiment pipeline for closed-loop comparison, FL convergence, robustness, ablation, sensitivity, privacy-utility, and runtime reporting.
 - Publication-ready figures and spreadsheets exported automatically.
+
+The benchmark evaluates static-obstacle avoidance and does not model dynamic vehicle-to-vehicle collision avoidance.
 
 ## Repository Structure
 
@@ -67,7 +69,7 @@ The pipeline in `main.py` executes:
 5. Robustness evaluation under disturbances and model mismatch.
 6. Ablation of federated learning and uncertainty regularization.
 7. Parameter-sensitivity sweeps.
-8. Privacy-utility comparison for DP-FedAvg and DP-FedProx.
+8. Privacy-utility comparison for DP-FedAvg and DP-Prox-FL.
 9. Runtime summary exported to `results/timing_report.xlsx`.
 
 ## Citation
@@ -76,7 +78,7 @@ If this repository is useful for your research, please cite the paper:
 
 ```bibtex
 @article{fedrmpc2026,
-  title={FedRMPC: Federated Robust Model Predictive Control via Uncertainty and Proximal Regularization},
+  title={FedRMPC: Uncertainty-Coupled Federated Learning and Robust Model Predictive Control},
   author={Zhou, Yuanqiang and Yin, Zilong and Zhu, Yan-Ran and Wang, Haoyu and Li, Dewei and Gao, Furong and Chen, Hong},
   year={2026}
 }

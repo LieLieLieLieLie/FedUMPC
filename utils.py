@@ -336,7 +336,7 @@ def plot_radar_chart_7(scenario_results, filename):
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_fl_curves(hist, methods, mse_file, drift_file):
     rounds = hist['Round']
-    PROPOSED = {'FedProx', 'DP-FedProx'}   # 加粗高亮
+    PROPOSED = {'Prox-FL', 'DP-Prox-FL'}   # 加粗高亮
 
     # ── MSE ──────────────────────────────────────────────────────────────────
     fig, ax = plt.subplots(figsize=(14, 9))
@@ -352,28 +352,28 @@ def plot_fl_curves(hist, methods, mse_file, drift_file):
         ax.plot(rounds, vals.tolist(), color=_c(m), lw=lw,
                 ls=_ls(m), marker=_m(m), markersize=ms, zorder=zord,
                 markevery=max(1, len(rounds)//8), label=lbl)
-    # annotate FedProx
+    # annotate Prox-FL
     last_r = list(rounds)[-1]
-    fp_vals = hist.get('FedProx_MSE', [])
+    fp_vals = hist.get('Prox-FL_MSE', [])
     if fp_vals and not np.isnan(float(fp_vals[-1]) if fp_vals else float('nan')):
         try:
             ax.annotate('Best federated\n(lowest drift)',
                         xy=(last_r, float(fp_vals[-1])),
                         xytext=(last_r - max(1, len(rounds)//4), float(fp_vals[-1]) * 3.5),
-                        fontsize=22, color=_c('FedProx'),
+                        fontsize=22, color=_c('Prox-FL'),
                         fontproperties=font_new_roman,
-                        arrowprops=dict(arrowstyle='->', color=_c('FedProx'), lw=2))
+                        arrowprops=dict(arrowstyle='->', color=_c('Prox-FL'), lw=2))
         except Exception:
             pass
     ax.set_xlabel('Communication Round', fontproperties=font_bold, fontsize=28)
     ax.set_ylabel('Validation MSE',      fontproperties=font_bold, fontsize=28)
-    # y축 클리핑: Scaffold 등 극단값 제외하고 FedProx 가시성 확보
+    # y축 클리핑: Scaffold 등 극단값 제외하고 Prox-FL 가시성 확보
     all_vis = [v for k,v in hist.items() if k.endswith('_MSE')
                for v in ([v] if not hasattr(v,'__iter__') else v)
                if isinstance(v,(int,float)) and not np.isnan(v) and v < 1.0]
     if all_vis:
         ax.set_ylim(0, min(max(all_vis)*1.25, 0.25))
-    # 주석: FedProx의 낮은 drift 우위 강조
+    # 주석: Prox-FL의 낮은 drift 우위 강조
     handles, labels = ax.get_legend_handles_labels()
     ncol_lg = min(len(handles), 4)
     fig.legend(handles, labels, loc='upper center', ncol=ncol_lg,
@@ -386,7 +386,7 @@ def plot_fl_curves(hist, methods, mse_file, drift_file):
     plt.close()
 
     # ── Drift (exclude Local Only; clip Scaffold爆炸值) ──────────────────────
-    PROPOSED = {'FedProx', 'DP-FedProx'}
+    PROPOSED = {'Prox-FL', 'DP-Prox-FL'}
     drift_methods = [m for m in methods if m != 'Local Only']
     last_r = list(rounds)[-1]
     fig, ax = plt.subplots(figsize=(14, 9))
@@ -686,7 +686,7 @@ def plot_privacy_tradeoff(df, filename):
     xs = np.arange(len(eps_vals))
 
     for ax, (col_key, ylabel) in zip(axes, metric_cols):
-        for m in ['DP-FedAvg', 'DP-FedProx']:
+        for m in ['DP-FedAvg', 'DP-Prox-FL']:
             sub  = df[df['Method']==m]
             vals = []
             for ev in eps_vals:

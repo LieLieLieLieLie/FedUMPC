@@ -17,7 +17,7 @@ FIX 1 – Scaffold v4强化修复 (v3仍爆炸: MSE=149619, Drift=1234):
 FIX 2 – Privacy accounting v2保留 (正确: 先累积RDP再转换):
   _compute_privacy_spent: total_rdp = n_steps * rdp_per_step (正确)
 
-FIX 3 – DP-FedProx v2保留:
+FIX 3 – DP-Prox-FL v2保留:
   mu_dp = max(Config.PROXIMAL_MU, 0.12)
   → DP噪声下更强近端正则化，防止过度漂移
 ──────────────────────────────────────────────────────────────────────────
@@ -295,8 +295,8 @@ class MOONClient(_BaseClient):
         return mse1, self.model.state_dict(), drift
 
 
-# ─── 5. FedProx ──────────────────────────────────────────────────────────────
-class FedProxClient(_BaseClient):
+# ─── 5. Prox-FL ──────────────────────────────────────────────────────────────
+class ProxFLClient(_BaseClient):
     def train(self, global_weights, **kw):
         if self.num_samples < 10:
             return 0.0, self.model.state_dict(), 0.0
@@ -305,7 +305,7 @@ class FedProxClient(_BaseClient):
         xu, ds = self._prepare_tensors()
         mse0 = self._test_mse(xu, ds)
         opt  = optim.Adam(self.model.parameters(),
-                          lr=Config.LR * Config.FEDPROX_LR_MULT)
+                          lr=Config.LR * Config.PROX_FL_LR_MULT)
         loss_fn = nn.MSELoss()
         self.model.train()
         n = self.num_samples
@@ -363,10 +363,10 @@ class DPFedAvgClient(FedAvgClient):
             n_steps, Config.DP_DELTA)
 
 
-# ─── 7. DP-FedProx (v5: SGD替换Adam，降低DP噪声放大效应) ───────────────────
-class DPFedProxClient(FedProxClient):
+# ─── 7. DP-Prox-FL (v5: SGD替换Adam，降低DP噪声放大效应) ───────────────────
+class DPProxFLClient(ProxFLClient):
     """
-    FedProx + DP-SGD.
+    Prox-FL + DP-SGD.
 
     v5改进: 改用SGD+momentum替代Adam。
     原因: Adam的自适应学习率会放大DP Gaussian噪声的方差，导致drift=2.1

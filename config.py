@@ -6,9 +6,9 @@ Two-tier parameter configuration:
 
 CHANGELOG v5 (2026-05-19):
   继承v4全部修复 + 新增:
-  - DP-FedProx: Adam→SGD (federated.py), 降低drift从2.1→~0.5
+  - DP-Prox-FL: Adam→SGD (federated.py), 降低drift从2.1→~0.5
   - exp4: 拆分为两张独立图(reliability+efficiency) [main.py/utils.py]
-  - exp2: FedProx/DP-FedProx加粗标注proposed [utils.py]
+  - exp2: Prox-FL/DP-Prox-FL加粗标注proposed [utils.py]
   - exp6: 删除suptitle [utils.py]
   - 轨迹: 自动选取FedRMPC最优seed可视化 [main.py]
 
@@ -87,7 +87,7 @@ class Config:
     HIDDEN_DIM   = 64
     DROPOUT      = 0.15
     PROXIMAL_MU  = 0.10
-    FEDPROX_LR_MULT = 1.35
+    PROX_FL_LR_MULT = 1.35
     SCAFFOLD_LR_C = 0.005
     MOON_MU = 1.0;  MOON_TEMP = 0.5
 
@@ -165,8 +165,8 @@ class Config:
         'FedRMPC':'#FF6666',       'Linear MPC':'#FFAA53',
         'Tube MPC':'#50CC55',      'Stochastic MPC':'#00DDDD',
         'GP-MPC':'#3399FF',        'Robust MPC':'#6666FF',
-        'DP-FedProx':'#FF6666',    'DP-FedAvg':'#FFAA53',
-        'FedProx':'#50CC55',       'FedAvg':'#00DDDD',
+        'DP-Prox-FL':'#FF6666',    'DP-FedAvg':'#FFAA53',
+        'Prox-FL':'#50CC55',       'FedAvg':'#00DDDD',
         'Local Only':'#3399FF',    'Scaffold':'#6666FF',   'MOON':'#9933FF',
         'Full FedRMPC':'#FF6666',  'w/o Uncertainty':'#FFAA53',
         'w/o Federated':'#50CC55',
@@ -175,8 +175,8 @@ class Config:
         'Linear MPC':'v',   'Tube MPC':'s',         'Stochastic MPC':'^',
         'GP-MPC':'D',       'Robust MPC':'p',        'FedRMPC':'o',
         'Local Only':'v',   'FedAvg':'s',            'DP-FedAvg':'^',
-        'Scaffold':'D',     'MOON':'p',              'FedProx':'o',
-        'DP-FedProx':'h',
+        'Scaffold':'D',     'MOON':'p',              'Prox-FL':'o',
+        'DP-Prox-FL':'h',
         'Full FedRMPC':'o', 'w/o Uncertainty':'D',   'w/o Federated':'s',
     }
     LINESTYLES = {
@@ -185,8 +185,8 @@ class Config:
         'Robust MPC':'--',          'FedRMPC':'-',
         'Local Only':(0,(3,1)),     'FedAvg':(0,(5,1)),
         'DP-FedAvg':(0,(1,1)),      'Scaffold':(0,(3,1,1,1)),
-        'MOON':'--',                'FedProx':'-',
-        'DP-FedProx':(0,(5,2,1,2)),
+        'MOON':'--',                'Prox-FL':'-',
+        'DP-Prox-FL':(0,(5,2,1,2)),
         'Full FedRMPC':'-',         'w/o Uncertainty':'--',
         'w/o Federated':(0,(3,1)),
     }
