@@ -1,0 +1,79 @@
+
+<mujoco model="FedRMPC intersection">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.01" gravity="0 0 0" integrator="RK4" iterations="80"/>
+  <size nconmax="300" njmax="1000"/>
+  <visual>
+    <global offwidth="1000" offheight="1000"/>
+    <quality shadowsize="4096" offsamples="4"/>
+    <map znear="0.01" zfar="150" fogstart="80" fogend="120"/>
+    <headlight ambient="0.48 0.48 0.48" diffuse="0.72 0.72 0.72" specular="0.25 0.25 0.25"/>
+  </visual>
+  <asset>
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.19 0.21 0.23" rgb2="0.24 0.26 0.28" width="512" height="512"/>
+    <material name="ground" texture="ground_tex" texrepeat="12 12" reflectance="0.05"/>
+    <material name="obstacle" rgba="0.63 0.42 0.22 1" specular="0.15" shininess="0.25"/>
+  </asset>
+  <worldbody>
+    <light pos="0 -10 35" dir="0 0 -1" directional="true" diffuse="0.85 0.85 0.82"/>
+    <geom name="ground" type="plane" size="24 24 0.1" material="ground" contype="0" conaffinity="0"/>
+    <geom name="road_h" type="box" pos="0 0 0.015" size="22 3.4 0.015" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0"/>
+    <geom name="road_v" type="box" pos="0 0 0.017" size="3.4 22 0.015" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0"/>
+    <geom type="box" pos="0 -0.05 0.045" size="22 0.035 0.012" rgba="0.95 0.82 0.20 0.75" contype="0" conaffinity="0"/>
+    <geom type="box" pos="-0.05 0 0.047" size="0.035 22 0.012" rgba="0.95 0.82 0.20 0.75" contype="0" conaffinity="0"/>
+    <geom name="obstacle_0" type="cylinder" pos="-9.000000 -0.500000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_1" type="cylinder" pos="9.000000 0.500000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_2" type="cylinder" pos="-0.500000 -9.000000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_3" type="cylinder" pos="0.500000 9.000000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_4" type="cylinder" pos="0.000000 0.000000 0.80" size="2.500000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_5" type="cylinder" pos="5.835260 -14.277727 0.80" size="1.221198 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_6" type="cylinder" pos="-10.100102 -10.371011 0.80" size="1.546652 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_7" type="cylinder" pos="13.547040 -7.149619 0.80" size="1.550865 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_8" type="cylinder" pos="4.158087 13.677032 0.80" size="1.227550 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_9" type="cylinder" pos="-10.101184 -15.523363 0.80" size="1.359123 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_10" type="cylinder" pos="13.347922 11.670088 0.80" size="1.219979 0.80" material="obstacle" contype="1" conaffinity="2"/>
+    <site name="start_0" type="cylinder" pos="-20.0 -2.0 0.035" size="0.70 0.025" rgba="0.920 0.180 0.160 1.000"/><site name="goal_0" type="cylinder" pos="20.0 -2.0 0.040" size="0.90 0.030" rgba="0.920 0.180 0.160 0.35"/><site name="start_1" type="cylinder" pos="20.0 2.0 0.035" size="0.70 0.025" rgba="0.100 0.450 0.880 1.000"/><site name="goal_1" type="cylinder" pos="-20.0 2.0 0.040" size="0.90 0.030" rgba="0.100 0.450 0.880 0.35"/><site name="start_2" type="cylinder" pos="-2.0 -20.0 0.035" size="0.70 0.025" rgba="0.120 0.680 0.300 1.000"/><site name="goal_2" type="cylinder" pos="-2.0 20.0 0.040" size="0.90 0.030" rgba="0.120 0.680 0.300 0.35"/><site name="start_3" type="cylinder" pos="2.0 20.0 0.035" size="0.70 0.025" rgba="0.950 0.550 0.080 1.000"/><site name="goal_3" type="cylinder" pos="2.0 -20.0 0.040" size="0.90 0.030" rgba="0.950 0.550 0.080 0.35"/>
+
+            <body name="vehicle_0" pos="-20.0 -2.0 0.38">
+              <joint name="vehicle_0_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_0_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_0_yaw" type="hinge" axis="0 0 1" damping="80"/>
+              <geom name="vehicle_0_body" type="box" size="1.10 0.55 0.28" mass="1000"
+                    rgba="0.920 0.180 0.160 1.000" contype="2" conaffinity="1" friction="1.0 0.02 0.002"/>
+              <geom type="box" pos="0.10 0 0.34" size="0.48 0.43 0.12" mass="1"
+                    rgba="0.12 0.16 0.20 1" contype="0" conaffinity="0"/>
+              <site name="vehicle_0_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
+                    rgba="1 1 0.75 1"/>
+            </body>
+
+            <body name="vehicle_1" pos="20.0 2.0 0.38">
+              <joint name="vehicle_1_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_1_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_1_yaw" type="hinge" axis="0 0 1" damping="80"/>
+              <geom name="vehicle_1_body" type="box" size="1.10 0.55 0.28" mass="1000"
+                    rgba="0.100 0.450 0.880 1.000" contype="2" conaffinity="1" friction="1.0 0.02 0.002"/>
+              <geom type="box" pos="0.10 0 0.34" size="0.48 0.43 0.12" mass="1"
+                    rgba="0.12 0.16 0.20 1" contype="0" conaffinity="0"/>
+              <site name="vehicle_1_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
+                    rgba="1 1 0.75 1"/>
+            </body>
+
+            <body name="vehicle_2" pos="-2.0 -20.0 0.38">
+              <joint name="vehicle_2_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_2_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_2_yaw" type="hinge" axis="0 0 1" damping="80"/>
+              <geom name="vehicle_2_body" type="box" size="1.10 0.55 0.28" mass="1000"
+                    rgba="0.120 0.680 0.300 1.000" contype="2" conaffinity="1" friction="1.0 0.02 0.002"/>
+              <geom type="box" pos="0.10 0 0.34" size="0.48 0.43 0.12" mass="1"
+                    rgba="0.12 0.16 0.20 1" contype="0" conaffinity="0"/>
+              <site name="vehicle_2_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
+                    rgba="1 1 0.75 1"/>
+            </body>
+
+            <body name="vehicle_3" pos="2.0 20.0 0.38">
+              <joint name="vehicle_3_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_3_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
+              <joint name="vehicle_3_yaw" type="hinge" axis="0 0 1" damping="80"/>
+              <geom name="vehicle_3_body" type="box" size="1.10 0.55 0.28" mass="1000"
+                    rgba="0.950 0.550 0.080 1.000" contype="2" conaffinity="1" friction="1.0 0.02 0.002"/>
+              <geom type="box" pos="0.10 0 0.34" size="0.48 0.43 0.12" mass="1"
+                    rgba="0.12 0.16 0.20 1" contype="0" conaffinity="0"/>
+              <site name="vehicle_3_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
+                    rgba="1 1 0.75 1"/>
+            </body>
+
+  </worldbody>
+  <actuator>
+    <motor name="vehicle_0_fx" joint="vehicle_0_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_0_fy" joint="vehicle_0_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_0_tau" joint="vehicle_0_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_1_fx" joint="vehicle_1_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_1_fy" joint="vehicle_1_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_1_tau" joint="vehicle_1_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_2_fx" joint="vehicle_2_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_2_fy" joint="vehicle_2_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_2_tau" joint="vehicle_2_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_3_fx" joint="vehicle_3_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_3_fy" joint="vehicle_3_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_3_tau" joint="vehicle_3_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/>
+  </actuator>
+</mujoco>
