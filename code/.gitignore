@@ -13,6 +13,7 @@ env/
 results/
 results_*/
 *.zip
+*.log
 
 .ipynb_checkpoints/
 .DS_Store

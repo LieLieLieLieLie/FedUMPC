@@ -50,7 +50,12 @@ class VehicleModel:
         beta = np.arctan(0.5 * np.tan(steer))
         dx = v * np.cos(yaw + beta) + np.random.normal(0, noise_std)
         dy = v * np.sin(yaw + beta) + np.random.normal(0, noise_std)
-        dv = (accel - self.drag * v + disturbance)
+        # ``accel`` is the acceleration produced by the nominal 1000 kg
+        # vehicle.  Scaling it by the nominal-to-actual mass ratio makes the
+        # configured client masses dynamically effective while preserving the
+        # original input bounds and the nominal-plant behaviour at 1000 kg.
+        inertial_scale = Config.MASS / max(float(self.mass), 1e-6)
+        dv = (inertial_scale * accel - self.drag * v + disturbance)
         dyaw = (v / self.L) * np.sin(beta)
         new_x = x + dx * self.dt
         new_y = y + dy * self.dt
@@ -246,11 +251,9 @@ def plot_crossing_comparison(env, all_trajs, targets, starts, filename):
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_radar_chart_7(scenario_results, filename):
     """
-    Replaces the radar/spider chart with a clean grouped bar + line figure.
-
-    Layout: 2-row × 3-col subplot grid
-      Row 1: Success Rate (bar) | Safety Compliance (bar) | Collision-Free Rate (bar)
-      Row 2: Safety Margin (bar+line) | Time Efficiency (bar) | Uncertainty Util. (bar)
+    Paper-facing five-metric summary.  Time efficiency and the
+    method-specific uncertainty-utilization diagnostic are intentionally
+    excluded so that every panel is comparable across all controllers.
 
     Each bar group = one method, coloured by Config.COLORS.
     Compute(ms) is intentionally excluded from paper-facing metrics.
@@ -268,11 +271,10 @@ def plot_radar_chart_7(scenario_results, filename):
         ('SC_mean',      'SC_std',       'Safety Compliance (%)',    1,     True),
         ('CR_mean',      'CR_std',       'Collision-Free Rate (%)',  100,   True),
         ('AvgDist_mean', 'AvgDist_std',  'Avg Safety Margin (m)',    1,     True),
-        ('TE_mean',      'TE_std',       'Time Efficiency (%)',      100,   True),
-        ('UU_mean',      'UU_std',       'Uncertainty Util. (%)',    100,   True),
+        ('Cost_mean',    'Cost_std',     'Control Cost',             1,     False),
     ]
 
-    fig, axs = plt.subplots(2, 3, figsize=(20, 12.5))
+    fig, axs = plt.subplots(1, 5, figsize=(22.0, 5.2))
     axs = axs.flatten()
 
     x  = np.arange(len(methods))
@@ -287,8 +289,6 @@ def plot_radar_chart_7(scenario_results, filename):
                 v = (1.0 - agg.get(km, 0.0)) * scale
             else:
                 v = agg.get(km, 0.0) * scale
-            if not hib:
-                v = -v   # already negated above for CR
             e = agg.get(ks, 0.0) * abs(scale)
             vals.append(v); errs.append(e)
 
@@ -298,15 +298,16 @@ def plot_radar_chart_7(scenario_results, filename):
         ax.errorbar(x, vals, yerr=errs, fmt='none',
                     ecolor='#333333', elinewidth=2, capsize=5, zorder=4)
 
-        # line overlay connecting bar tops
+        # Restore the original visual structure.
         ax.plot(x, vals, 'o--', color='#444444', lw=2.5,
                 ms=8, zorder=5, alpha=0.7)
 
         ax.set_xticks([])
-        ax.set_ylabel(ylabel, fontproperties=font_bold, fontsize=20)
-        ax.set_title(ylabel, fontproperties=font_bold, fontsize=20, color='black', pad=6)
+        ax.set_ylabel(ylabel, fontproperties=font_bold, fontsize=22)
+        ax.set_title(ylabel, fontproperties=font_bold, fontsize=22,
+                     color='black', pad=6)
         ax.grid(True, axis='y', ls=':', alpha=0.55, color='gray', zorder=0)
-        ax.tick_params(axis='y', labelsize=18)
+        ax.tick_params(axis='y', labelsize=20)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
 
@@ -315,31 +316,34 @@ def plot_radar_chart_7(scenario_results, filename):
             if abs(v) > 0.5:
                 label = f'{v:.0f}' if abs(v) >= 5 else f'{v:.1f}'
                 ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
-                        label, ha='center', va='bottom', fontsize=14,
+                        label, ha='center', va='bottom', fontsize=16,
                         fontproperties=font_new_roman, color='#222222')
 
-    # legend directly below subplots (not far from bars)
+    # Keep the original single-row legend, with only a small font increase.
     handles = [mpatches.Patch(color=_c(m), label=m) for m in methods]
-    ncol = min(len(methods), 6)
-    fig.legend(handles=handles, loc='lower center', ncol=ncol,
-               frameon=False, prop=font_new_roman, fontsize=18,
+    fig.legend(handles=handles, loc='lower center', ncol=min(len(methods), 6),
+               frameon=False, prop=font_new_roman, fontsize=20,
                bbox_to_anchor=(0.5, -0.005))
 
-    plt.tight_layout(rect=[0, 0.07, 1, 1], pad=0.6, w_pad=1.0, h_pad=1.0)
+    plt.tight_layout(rect=[0, 0.15, 1, 1], pad=0.6, w_pad=1.0)
     plt.savefig(os.path.join(Config.RESULTS_DIR, filename),
                 bbox_inches='tight', dpi=300)
     plt.close()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  FL convergence curves (MSE + Drift, two subplots)
+#  FL convergence curves (MSE + Drift, equal-size subplots and one legend)
 # ─────────────────────────────────────────────────────────────────────────────
-def plot_fl_curves(hist, methods, mse_file, drift_file):
+def plot_fl_curves(hist, methods, filename):
+    """Plot validation MSE and client drift in one equal-width 1x2 figure."""
+    if not filename.endswith('.pdf'):
+        filename = filename.replace('.png', '.pdf')
+
     rounds = hist['Round']
     PROPOSED = {'Prox-FL', 'DP-Prox-FL'}   # 加粗高亮
+    fig, (ax_mse, ax_drift) = plt.subplots(1, 2, figsize=(18, 7.6), sharex=True)
 
     # ── MSE ──────────────────────────────────────────────────────────────────
-    fig, ax = plt.subplots(figsize=(14, 9))
     for m in methods:
         key = f'{m}_MSE'
         if key not in hist: continue
@@ -349,51 +353,27 @@ def plot_fl_curves(hist, methods, mse_file, drift_file):
         ms   = 13  if m in PROPOSED else 10
         zord = 5   if m in PROPOSED else 3
         lbl  = f'{m} (proposed)' if m in PROPOSED else m
-        ax.plot(rounds, vals.tolist(), color=_c(m), lw=lw,
-                ls=_ls(m), marker=_m(m), markersize=ms, zorder=zord,
-                markevery=max(1, len(rounds)//8), label=lbl)
-    # annotate Prox-FL
-    last_r = list(rounds)[-1]
-    fp_vals = hist.get('Prox-FL_MSE', [])
-    if fp_vals and not np.isnan(float(fp_vals[-1]) if fp_vals else float('nan')):
-        try:
-            ax.annotate('Best federated\n(lowest drift)',
-                        xy=(last_r, float(fp_vals[-1])),
-                        xytext=(last_r - max(1, len(rounds)//4), float(fp_vals[-1]) * 3.5),
-                        fontsize=22, color=_c('Prox-FL'),
-                        fontproperties=font_new_roman,
-                        arrowprops=dict(arrowstyle='->', color=_c('Prox-FL'), lw=2))
-        except Exception:
-            pass
-    ax.set_xlabel('Communication Round', fontproperties=font_bold, fontsize=28)
-    ax.set_ylabel('Validation MSE',      fontproperties=font_bold, fontsize=28)
+        ax_mse.plot(rounds, vals.tolist(), color=_c(m), lw=lw,
+                    ls=_ls(m), marker=_m(m), markersize=ms, zorder=zord,
+                    markevery=max(1, len(rounds)//8), label=lbl)
+    ax_mse.set_title('(a) Validation MSE', fontproperties=font_bold, fontsize=26)
+    ax_mse.set_xlabel('Communication Round', fontproperties=font_bold, fontsize=24)
+    ax_mse.set_ylabel('Validation MSE', fontproperties=font_bold, fontsize=24)
     # y축 클리핑: Scaffold 등 극단값 제외하고 Prox-FL 가시성 확보
     all_vis = [v for k,v in hist.items() if k.endswith('_MSE')
                for v in ([v] if not hasattr(v,'__iter__') else v)
                if isinstance(v,(int,float)) and not np.isnan(v) and v < 1.0]
     if all_vis:
-        ax.set_ylim(0, min(max(all_vis)*1.25, 0.25))
-    # 주석: Prox-FL의 낮은 drift 우위 강조
-    handles, labels = ax.get_legend_handles_labels()
-    ncol_lg = min(len(handles), 4)
-    fig.legend(handles, labels, loc='upper center', ncol=ncol_lg,
-               frameon=False, prop=font_new_roman, fontsize=20,
-               bbox_to_anchor=(0.5, 1.01))
-    ax.grid(True, ls=':', alpha=0.55, color='gray')
-    ax.tick_params(labelsize=24, width=2.5, length=7)
-    plt.tight_layout(rect=[0, 0, 1, 0.88])
-    plt.savefig(os.path.join(Config.RESULTS_DIR, mse_file), dpi=300, bbox_inches='tight')
-    plt.close()
+        ax_mse.set_ylim(0, min(max(all_vis)*1.25, 0.25))
+    ax_mse.grid(True, ls=':', alpha=0.55, color='gray')
+    ax_mse.tick_params(labelsize=20, width=2.2, length=6)
 
     # ── Drift (exclude Local Only; clip Scaffold爆炸值) ──────────────────────
-    PROPOSED = {'Prox-FL', 'DP-Prox-FL'}
     drift_methods = [m for m in methods if m != 'Local Only']
-    last_r = list(rounds)[-1]
-    fig, ax = plt.subplots(figsize=(14, 9))
-    ax.axhline(1.0, color='#444444', ls=':', lw=3.0, alpha=0.85, zorder=1)
-    ax.text(list(rounds)[0], 1.03, 'Low drift threshold (stable)',
-            fontsize=18, color='#444444', fontproperties=font_new_roman,
-            va='bottom')
+    ax_drift.axhline(1.0, color='#444444', ls=':', lw=2.6, alpha=0.85, zorder=1)
+    ax_drift.text(list(rounds)[0], 1.04, 'Low-drift threshold',
+                  fontsize=18, color='#444444', fontproperties=font_new_roman,
+                  va='bottom')
     for m in drift_methods:
         key = f'{m}_Drift'
         if key not in hist: continue
@@ -410,29 +390,24 @@ def plot_fl_curves(hist, methods, mse_file, drift_file):
         ms   = 13  if m in PROPOSED else 10
         zord = 5   if m in PROPOSED else 3
         lbl  = f'{m} (proposed)' if m in PROPOSED else m
-        ax.plot(rounds, vals.tolist(), color=_c(m), lw=lw,
-                ls=_ls(m), marker=_m(m), markersize=ms, zorder=zord,
-                markevery=max(1, len(rounds)//8), label=lbl)
-    try:
-        ax.annotate('Stable region',
-                    xy=(last_r, 1.0),
-                    xytext=(last_r - max(1, len(rounds)//3), 1.45),
-                    fontsize=22, color='#444444',
-                    fontproperties=font_new_roman,
-                    arrowprops=dict(arrowstyle='->', color='#444444', lw=2))
-    except Exception:
-        pass
-    ax.set_xlabel('Communication Round', fontproperties=font_bold, fontsize=28)
-    ax.set_ylabel('Client Drift (L2)',   fontproperties=font_bold, fontsize=28)
-    handles, labels = ax.get_legend_handles_labels()
-    ncol_lg = min(len(handles), 4)
-    fig.legend(handles, labels, loc='upper center', ncol=ncol_lg,
-               frameon=False, prop=font_new_roman, fontsize=20,
-               bbox_to_anchor=(0.5, 1.01))
-    ax.grid(True, ls=':', alpha=0.55, color='gray')
-    ax.tick_params(labelsize=24, width=2.5, length=7)
-    plt.tight_layout(rect=[0, 0, 1, 0.88])
-    plt.savefig(os.path.join(Config.RESULTS_DIR, drift_file), dpi=300, bbox_inches='tight')
+        ax_drift.plot(rounds, vals.tolist(), color=_c(m), lw=lw,
+                      ls=_ls(m), marker=_m(m), markersize=ms, zorder=zord,
+                      markevery=max(1, len(rounds)//8), label=lbl)
+    ax_drift.set_title('(b) Client Drift', fontproperties=font_bold, fontsize=26)
+    ax_drift.set_xlabel('Communication Round', fontproperties=font_bold, fontsize=24)
+    ax_drift.set_ylabel('Client Drift (L2)', fontproperties=font_bold, fontsize=24)
+    ax_drift.grid(True, ls=':', alpha=0.55, color='gray')
+    ax_drift.tick_params(labelsize=20, width=2.2, length=6)
+
+    # One shared legend for the two equal-size panels.
+    handles, labels = ax_mse.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', ncol=4,
+               frameon=False, prop=font_new_roman, fontsize=18,
+               bbox_to_anchor=(0.5, 1.01), columnspacing=1.3,
+               handlelength=2.5)
+    plt.tight_layout(rect=[0, 0, 1, 0.84], w_pad=2.5)
+    plt.savefig(os.path.join(Config.RESULTS_DIR, filename), dpi=300,
+                bbox_inches='tight')
     plt.close()
 
 
@@ -441,16 +416,10 @@ def plot_fl_curves(hist, methods, mse_file, drift_file):
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_robustness_bars(df, filename):
     """
-    v6: 각 서브플롯에서 최고 성능 알고리즘 표시 (★ 마커 + 굵은 테두리)
+    Highlight the best bar in each panel with full opacity and a dark outline.
     """
     if not filename.endswith('.pdf'):
         filename = filename.replace('.png', '.pdf')
-
-    import matplotlib.colors as mcolors
-
-    def _darken(color, factor=0.78):
-        rgb = np.array(mcolors.to_rgb(color))
-        return tuple(np.clip(rgb * factor, 0.0, 1.0))
 
     scenarios = df['Scenario'].unique()
     methods   = df['Method'].unique()
@@ -460,7 +429,7 @@ def plot_robustness_bars(df, filename):
     n_sc  = len(scenarios)
     n_met = len(metrics)
 
-    fig, axs = plt.subplots(n_met, n_sc, figsize=(7*n_sc, 6*n_met))
+    fig, axs = plt.subplots(n_met, n_sc, figsize=(20, 12.5))
     if n_sc == 1: axs = axs[:, np.newaxis]
 
     bw = 0.8 / max(len(methods), 1)
@@ -477,33 +446,32 @@ def plot_robustness_bars(df, filename):
                 if msub.empty: continue
                 val = float(msub[col_key].values[0])
                 offset = (j - len(methods)/2 + 0.5) * bw
-                is_best = abs(val - best_val) < 0.5
-                face = _darken(_c(m)) if is_best else _c(m)
+                is_best = np.isclose(val, best_val, rtol=1e-9, atol=1e-9)
                 ax.bar(xs + offset, [val], bw*0.88,
-                       color=face, label=m, zorder=3,
-                       edgecolor='white', linewidth=0.8,
-                       hatch='//////' if is_best else None)
-                if is_best:
-                    ax.bar(xs + offset, [val], bw*0.88,
-                           color='none', zorder=4,
-                           edgecolor='#222222', linewidth=1.4)
+                       color=_c(m), alpha=1.0 if is_best else 0.48,
+                       label=m, zorder=3,
+                       edgecolor='#1f1f1f' if is_best else _c(m),
+                       linewidth=2.8 if is_best else 0.8)
             ax.set_title(sc if row==0 else '', fontproperties=font_bold,
-                         fontsize=22)
+                         fontsize=28)
             ax.set_ylabel(ylabel if col==0 else '',
-                          fontproperties=font_bold, fontsize=20)
+                          fontproperties=font_bold, fontsize=25)
             ax.set_xticks([])
             ax.grid(True, axis='y', ls=':', alpha=0.5, color='gray')
-            ax.tick_params(labelsize=18)
+            ax.tick_params(labelsize=22, width=1.8, length=5)
+            ax.set_axisbelow(True)
 
-    # Legend at bottom in a single row
-    handles = [mpatches.Patch(color=_c(m), label=m) for m in methods]
-    handles.append(mpatches.Patch(facecolor='#777777', edgecolor='white',
-                                  hatch='//////', label='Best in panel'))
-    fig.legend(handles=handles, loc='lower center', ncol=min(len(handles), 7),
-               frameon=False, prop=font_new_roman, fontsize=16,
-               bbox_to_anchor=(0.5, -0.04))
+    # Two-row centered legend. The outline key explains the best-bar emphasis.
+    handles = [mpatches.Patch(facecolor=_c(m), edgecolor='none',
+                              alpha=0.72, label=m) for m in methods]
+    handles.append(mpatches.Patch(facecolor='white', edgecolor='#1f1f1f',
+                                  linewidth=2.8, label='Best in panel'))
+    fig.legend(handles=handles, loc='lower center', ncol=4,
+               frameon=False, prop=font_new_roman, fontsize=21,
+               bbox_to_anchor=(0.5, 0.005), columnspacing=1.4,
+               handlelength=1.6)
 
-    plt.tight_layout(rect=[0, 0.04, 1, 1])
+    plt.tight_layout(rect=[0, 0.13, 1, 1], h_pad=1.7, w_pad=1.2)
     plt.savefig(os.path.join(Config.RESULTS_DIR, filename), dpi=300,
                 bbox_inches='tight')
     plt.close()
@@ -524,7 +492,7 @@ def plot_ablation_reliability(df, filename):
     bw     = 0.55
     colors = [_c(c) for c in cfgs]
 
-    fig, ax1 = plt.subplots(figsize=(12, 7))
+    fig, ax1 = plt.subplots(figsize=(11, 6.5))
     sr_vals = [float(df[df['Config']==c]['SR (%)'].mean())  for c in cfgs]
     sc_vals = [float(df[df['Config']==c]['SC (%)'].mean())  for c in cfgs]
 
@@ -533,28 +501,28 @@ def plot_ablation_reliability(df, filename):
                    edgecolor='white', linewidth=1.5, zorder=3)
     for bar, v in zip(bars, sr_vals):
         if v > 2:
-            ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.8,
-                     f'{v:.1f}', ha='center', va='bottom', fontsize=22,
+            ax1.text(bar.get_x() + bar.get_width()/2 - 0.20, bar.get_height() + 0.8,
+                     f'{v:.1f}', ha='center', va='bottom', fontsize=24,
                      fontproperties=font_bold)
 
-    ax1.set_ylabel('Success Rate (%)', fontproperties=font_bold, fontsize=24)
+    ax1.set_ylabel('Success Rate (%)', fontproperties=font_bold, fontsize=26)
     ax1.set_ylim(0, max(sr_vals) * 1.35)
     ax1.set_xticks(x)
-    ax1.set_xticklabels(cfgs, fontproperties=font_new_roman, fontsize=22,
+    ax1.set_xticklabels(cfgs, fontproperties=font_new_roman, fontsize=24,
                          rotation=10, ha='right')
     ax1.grid(True, axis='y', ls=':', alpha=0.4, color='gray', zorder=0)
-    ax1.tick_params(axis='y', labelsize=20)
+    ax1.tick_params(axis='y', labelsize=22)
 
     # Line for SC on twin axis
     ax2 = ax1.twinx()
     ax2.plot(x, sc_vals, color='#333333', lw=4.5, ls='--',
              marker='s', markersize=13, zorder=5)
     for xi, v in zip(x, sc_vals):
-        ax2.text(xi + 0.05, v + 0.4, f'{v:.1f}', ha='left', va='bottom',
-                 fontsize=22, fontproperties=font_bold, color='#333333')
-    ax2.set_ylabel('Safety Compliance (%)', fontproperties=font_bold, fontsize=24)
+        ax2.text(xi + 0.18, v + 0.4, f'{v:.1f}', ha='left', va='bottom',
+                 fontsize=24, fontproperties=font_bold, color='#333333')
+    ax2.set_ylabel('Safety Compliance (%)', fontproperties=font_bold, fontsize=26)
     ax2.set_ylim(min(sc_vals) * 0.90, max(sc_vals) * 1.12)
-    ax2.tick_params(axis='y', labelsize=20)
+    ax2.tick_params(axis='y', labelsize=22)
 
     # Only 2 legend items
     import matplotlib.patches as mpatch
@@ -565,7 +533,7 @@ def plot_ablation_reliability(df, filename):
                markersize=12, label='Safety Compliance (line)'),
     ]
     fig.legend(handles=handles, loc='upper center', ncol=2,
-               frameon=False, prop=font_new_roman, fontsize=17,
+               frameon=False, prop=font_new_roman, fontsize=19,
                bbox_to_anchor=(0.5, 1.01))
 
     plt.tight_layout(rect=[0, 0, 1, 0.93])
@@ -585,7 +553,7 @@ def plot_ablation_efficiency(df, filename):
     bw     = 0.55
     colors = [_c(c) for c in cfgs]
 
-    fig, ax1 = plt.subplots(figsize=(12, 7))
+    fig, ax1 = plt.subplots(figsize=(11, 6.5))
     cost_vals = [float(df[df['Config']==c]['Cost'].mean()) for c in cfgs]
     jerk_vals = [float(df[df['Config']==c]['Jerk'].mean()) for c in cfgs]
 
@@ -593,28 +561,28 @@ def plot_ablation_efficiency(df, filename):
     bars = ax1.bar(x, cost_vals, bw, color=colors, alpha=0.85,
                    edgecolor='white', linewidth=1.5, zorder=3)
     for bar, v in zip(bars, cost_vals):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
-                 f'{v:.1f}', ha='center', va='bottom', fontsize=22,
+        ax1.text(bar.get_x() + bar.get_width()/2 - 0.20, bar.get_height() + 0.3,
+                 f'{v:.1f}', ha='center', va='bottom', fontsize=24,
                  fontproperties=font_bold)
 
-    ax1.set_ylabel('Control Cost', fontproperties=font_bold, fontsize=24)
+    ax1.set_ylabel('Control Cost', fontproperties=font_bold, fontsize=26)
     ax1.set_ylim(0, max(cost_vals) * 1.35)
     ax1.set_xticks(x)
-    ax1.set_xticklabels(cfgs, fontproperties=font_new_roman, fontsize=22,
+    ax1.set_xticklabels(cfgs, fontproperties=font_new_roman, fontsize=24,
                          rotation=10, ha='right')
     ax1.grid(True, axis='y', ls=':', alpha=0.4, color='gray', zorder=0)
-    ax1.tick_params(axis='y', labelsize=20)
+    ax1.tick_params(axis='y', labelsize=22)
 
     # Line for Jerk on twin axis
     ax2 = ax1.twinx()
     ax2.plot(x, jerk_vals, color='#333333', lw=4.5, ls='--',
              marker='o', markersize=13, zorder=5)
     for xi, v in zip(x, jerk_vals):
-        ax2.text(xi + 0.05, v + 1.0, f'{v:.1f}', ha='left', va='bottom',
-                 fontsize=22, fontproperties=font_bold, color='#333333')
-    ax2.set_ylabel('Jerk', fontproperties=font_bold, fontsize=24)
+        ax2.text(xi + 0.18, v + 1.0, f'{v:.1f}', ha='left', va='bottom',
+                 fontsize=24, fontproperties=font_bold, color='#333333')
+    ax2.set_ylabel('Jerk', fontproperties=font_bold, fontsize=26)
     ax2.set_ylim(min(jerk_vals) * 0.85, max(jerk_vals) * 1.15)
-    ax2.tick_params(axis='y', labelsize=20)
+    ax2.tick_params(axis='y', labelsize=22)
 
     # Only 2 legend items
     import matplotlib.patches as mpatch
@@ -625,7 +593,7 @@ def plot_ablation_efficiency(df, filename):
                markersize=12, label='Jerk (line)'),
     ]
     fig.legend(handles=handles, loc='upper center', ncol=2,
-               frameon=False, prop=font_new_roman, fontsize=17,
+               frameon=False, prop=font_new_roman, fontsize=19,
                bbox_to_anchor=(0.5, 1.01))
 
     plt.tight_layout(rect=[0, 0, 1, 0.93])
@@ -634,10 +602,10 @@ def plot_ablation_efficiency(df, filename):
 
 
 def plot_ablation_summary(df, filename):
-    """向后兼容别名: 同时生成reliability和efficiency两张图"""
+    """Backward-compatible wrapper that restores the original two PDFs."""
     base = filename.replace('.pdf', '')
     plot_ablation_reliability(df, base + '_reliability.pdf')
-    plot_ablation_efficiency(df,  base + '_efficiency.pdf')
+    plot_ablation_efficiency(df, base + '_efficiency.pdf')
 # Alias kept for backward compatibility
 plot_ablation_combined = plot_ablation_summary
 
@@ -672,44 +640,46 @@ def plot_privacy_tradeoff(df, filename):
     if not filename.endswith('.pdf'):
         filename = filename.replace('.png', '.pdf')
 
-    fig, axes = plt.subplots(1, 3, figsize=(24, 8))
+    fig, axes = plt.subplots(1, 3, figsize=(22.0, 7.3))
     metric_cols = [('Final MSE','Validation MSE'),
                    ('SC (%)','Safety Compliance (%)'),
                    ('SR (%)','Success Rate (%)')]
 
-    eps_vals_raw = df['Target ε'].unique()   # strings like '0.5','1.0','∞'
-    # sort: numeric first, then ∞
-    def sort_key(v):
-        try: return float(v)
-        except: return 1e9
-    eps_vals = sorted(eps_vals_raw, key=sort_key)
-    xs = np.arange(len(eps_vals))
+    noise_vals = sorted(
+        [float(v) for v in df['Noise mult'].unique()], reverse=True)
+    xs = np.arange(len(noise_vals))
+    setting_labels = [
+        ('None' if np.isclose(v, 0.0) else
+         'High' if v == max(noise_vals) else 'Moderate')
+        for v in noise_vals
+    ]
 
     for ax, (col_key, ylabel) in zip(axes, metric_cols):
         for m in ['DP-FedAvg', 'DP-Prox-FL']:
             sub  = df[df['Method']==m]
             vals = []
-            for ev in eps_vals:
-                row = sub[sub['Target ε']==ev]
+            for noise in noise_vals:
+                row = sub[np.isclose(sub['Noise mult'].astype(float), noise)]
                 vals.append(float(row[col_key].values[0]) if not row.empty else np.nan)
             ax.plot(xs, vals, color=_c(m), lw=4.5,
                     ls=_ls(m), marker=_m(m), markersize=13, label=m)
 
         ax.set_xticks(xs)
-        ax.set_xticklabels([f'ε={v}' for v in eps_vals],
-                           fontsize=22, fontproperties=font_new_roman)
-        ax.set_ylabel(ylabel, fontproperties=font_bold, fontsize=26)
-        ax.set_xlabel('Privacy Budget ε', fontproperties=font_bold, fontsize=26)
-        ax.legend(frameon=False, prop=font_new_roman, fontsize=22)
+        ax.set_xticklabels(setting_labels,
+                           fontsize=24, fontproperties=font_new_roman)
+        ax.set_ylabel(ylabel, fontproperties=font_bold, fontsize=28)
+        ax.set_xlabel('Gradient-noise setting', fontproperties=font_bold,
+                      fontsize=28)
+        ax.legend(frameon=False, prop=font_new_roman, fontsize=24)
         ax.grid(True, ls=':', alpha=0.5, color='gray')
-        ax.tick_params(labelsize=22, width=2, length=6)
+        ax.tick_params(labelsize=24, width=2, length=6)
 
-    # annotate: ε=∞ = no DP
+    # Mark the unperturbed reference without implying a formal privacy budget.
     for ax in axes:
         ylo, yhi = ax.get_ylim()
-        ax.axvline(len(eps_vals)-1, color='#888888', ls='--', lw=2, alpha=0.6)
-        ax.text(len(eps_vals)-1.45, ylo + (yhi-ylo)*0.06,
-                'No DP', fontsize=18, color='#555555',
+        ax.axvline(len(noise_vals)-1, color='#888888', ls='--', lw=2, alpha=0.6)
+        ax.text(len(noise_vals)-1.45, ylo + (yhi-ylo)*0.06,
+                'No perturbation', fontsize=20, color='#555555',
                 fontproperties=font_new_roman)
 
     plt.tight_layout()
@@ -730,7 +700,7 @@ def plot_sensitivity(sens, filename):
     if not filename.endswith('.pdf'):
         filename = filename.replace('.png', '.pdf')
 
-    fig, axes = plt.subplots(1, 2, figsize=(22, 8))
+    fig, axes = plt.subplots(1, 2, figsize=(20.0, 7.2))
     pcolor = _c('FedRMPC');  scolor = _c('Robust MPC')
 
     for ax, xvals, sr, sc, xlabel in [
@@ -746,23 +716,23 @@ def plot_sensitivity(sens, filename):
         # value annotations
         for xi, v in zip(xvals, sr_pct):
             ax.text(xi, v + 1.5, f'{v:.1f}%', ha='center', va='bottom',
-                    fontsize=18, color=pcolor, fontproperties=font_new_roman)
+                    fontsize=20, color=pcolor, fontproperties=font_new_roman)
         for xi, v in zip(xvals, sc):
             ax2.text(xi, v - 1.8, f'{v:.1f}%', ha='center', va='top',
-                     fontsize=18, color=scolor, fontproperties=font_new_roman)
+                     fontsize=20, color=scolor, fontproperties=font_new_roman)
 
-        ax.set_xlabel(xlabel, fontproperties=font_bold, fontsize=26)
+        ax.set_xlabel(xlabel, fontproperties=font_bold, fontsize=28)
         ax.set_ylabel('Success Rate (%) ↑', color=pcolor,
-                      fontproperties=font_bold, fontsize=24)
+                      fontproperties=font_bold, fontsize=26)
         ax2.set_ylabel('Safety Compliance (%) ↑', color=scolor,
-                       fontproperties=font_bold, fontsize=24)
+                       fontproperties=font_bold, fontsize=26)
         ax.set_ylim(0, max(sr_pct) * 1.30)
         ax2.set_ylim(min(sc) * 0.93, max(sc) * 1.08)
-        ax.tick_params(labelsize=22, colors=pcolor)
-        ax2.tick_params(labelsize=22, colors=scolor)
+        ax.tick_params(labelsize=24, colors=pcolor)
+        ax2.tick_params(labelsize=24, colors=scolor)
         ax.grid(True, ls=':', alpha=0.5, color='gray')
         ax.legend([l1, l2], [l1.get_label(), l2.get_label()],
-                  frameon=False, prop=font_new_roman, fontsize=20,
+                  frameon=False, prop=font_new_roman, fontsize=22,
                   loc='upper left')
 
     plt.tight_layout()

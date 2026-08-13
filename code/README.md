@@ -1,15 +1,15 @@
 # FedRMPC
 
-Official implementation of **FedRMPC: Uncertainty-Coupled Federated Learning and Robust Model Predictive Control**.
+Official implementation of **FedRMPC: Federated Uncertainty-Aware Predictive Control for Heterogeneous Internet-of-Vehicles Systems**.
 
-FedRMPC is a safety-oriented multi-vehicle control framework that combines federated learning, Bayesian neural-network dynamics modeling, epistemic uncertainty quantification, and robust model predictive control. The physics model supplies the nominal geometric rollout, while the federated BNN contributes uncertainty, learned-rollout disagreement, and adaptive static-obstacle safety inflation. The implementation evaluates independent four-vehicle rollouts in a common intersection map under heterogeneous dynamics, non-IID local data, disturbances, ablations, sensitivity sweeps, and differential-privacy noise.
+FedRMPC is a safety-oriented edge--cloud architecture that combines federated dynamics learning, MC-dropout epistemic-uncertainty estimation, and vehicle-local model predictive control. The physics model supplies the nominal geometric rollout, while the shared predictor contributes candidate-dependent uncertainty, learned-rollout disagreement, and adaptive static-obstacle risk shaping. The implementation evaluates independent four-vehicle rollouts under both common and physically heterogeneous plants; it does not implement coupled trajectory negotiation or certified safety.
 
 ## Highlights
 
-- Federated BNN dynamics learning evaluated using Local Only, FedAvg, Prox-FL, SCAFFOLD, MOON, DP-FedAvg, and DP-Prox-FL configurations.
-- Uncertainty-aware MPC using Monte Carlo dropout to penalize high-risk predictions and adapt safety margins.
+- Federated MC-dropout dynamics learning evaluated using Local Only, FedAvg, MOON, and Prox-FL under a matched primary protocol; SCAFFOLD remains implemented but is excluded from the paper's main table because equal-budget method-specific tuning was unavailable.
+- Candidate-batched MC-dropout evaluation that preserves recursive horizon uncertainty while reducing neural-network launch overhead.
 - Baselines including Linear MPC, Tube MPC, Stochastic MPC, GP-MPC, and Robust MPC.
-- End-to-end experiment pipeline for closed-loop comparison, FL convergence, robustness, ablation, sensitivity, privacy-utility, and runtime reporting.
+- Auditable five-seed scripts for common-plant and heterogeneous-plant control, robustness, ablation, sensitivity, gradient-noise, learner matching, partial participation, and runtime reporting.
 - Publication-ready figures and spreadsheets exported automatically.
 
 The benchmark evaluates static-obstacle avoidance and does not model dynamic vehicle-to-vehicle collision avoidance.
@@ -22,7 +22,12 @@ The benchmark evaluates static-obstacle avoidance and does not model dynamic veh
 ├── controllers.py    # MPC baselines and FedRMPC controller
 ├── federated.py      # Federated clients, server aggregation, and privacy utilities
 ├── main.py           # End-to-end experiment entry point
-├── models.py         # Bayesian neural network with MC-dropout uncertainty
+├── models.py         # Neural dynamics predictor with MC-dropout uncertainty
+├── paper_experiments.py          # Main five-seed manuscript experiments
+├── paper_extended_experiments.py # Extended ablation and diagnostic experiments
+├── data_scarcity_experiment.py   # Local-data scarcity and unequal-coverage checks
+├── participation_experiment.py   # Partial-client-participation stress test
+├── regenerate_paper_figures.py   # Rebuild figures from saved experiment tables
 ├── utils.py          # Vehicle model, environment, metrics, and plotting utilities
 ├── requirements.txt  # Python dependencies
 └── README.md
@@ -56,6 +61,19 @@ Run the larger full configuration:
 python main.py --full
 ```
 
+Reproduce the manuscript-facing five-seed experiments:
+
+```bash
+python paper_experiments.py
+python paper_extended_experiments.py
+python data_scarcity_experiment.py
+```
+
+The manuscript scripts write generated CSV and vector-PDF artifacts to `results/`.
+The stored `exp_metadata.json` records the fixed seed list, hardware metadata,
+and plant parameters. The published paper directory retains the exact tables
+used for the submitted manuscript.
+
 The default mode is intended for reproducible development runs. The full mode increases the horizon, number of seeds, federated rounds, local epochs, hidden dimension, and MC-dropout samples.
 
 ## Experiments
@@ -67,10 +85,10 @@ The pipeline in `main.py` executes:
 3. Closed-loop MPC comparison against classical and learning-based baselines.
 4. Federated training-dynamics analysis.
 5. Robustness evaluation under disturbances and model mismatch.
-6. Ablation of federated learning and uncertainty regularization.
+6. Matched ablation of per-vehicle local learning, federated learning, and uncertainty feedback.
 7. Parameter-sensitivity sweeps.
-8. Privacy-utility comparison for DP-FedAvg and DP-Prox-FL.
-9. Runtime summary exported to `results/timing_report.xlsx`.
+8. Gradient-noise stress testing without claiming a formal privacy certificate.
+9. Partial-client-participation and controller-call latency measurements.
 
 ## Citation
 
@@ -78,12 +96,8 @@ If this repository is useful for your research, please cite the paper:
 
 ```bibtex
 @article{fedrmpc2026,
-  title={FedRMPC: Uncertainty-Coupled Federated Learning and Robust Model Predictive Control},
+  title={FedRMPC: Federated Uncertainty-Aware Predictive Control for Heterogeneous Internet-of-Vehicles Systems},
   author={Zhou, Yuanqiang and Yin, Zilong and Zhu, Yan-Ran and Wang, Haoyu and Li, Dewei and Gao, Furong and Chen, Hong},
   year={2026}
 }
 ```
-
-## License
-
-This repository follows the license file included in the project.

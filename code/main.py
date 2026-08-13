@@ -99,12 +99,21 @@ MASS_DIST = [800, 900, 1000, 1100, 1200, 1300]
 #  Simulation runner  (unchanged logic, uses Config.SIM_STEPS)
 # ─────────────────────────────────────────────────────────────────────────────
 def run_simulation(controllers, env, noise=0.0, disturbance=0.0,
-                   mass_error=0.0, seed=None):
+                   mass_error=0.0, seed=None, vehicle_masses=None,
+                   vehicle_drags=None):
     if seed is not None:
         np.random.seed(seed)
-    masses  = [Config.MASS*(1+mass_error), Config.MASS*(1-mass_error),
-               Config.MASS, Config.MASS]
-    physics = [VehicleModel(mass=m) for m in masses]
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+    masses = (list(vehicle_masses) if vehicle_masses is not None else
+              [Config.MASS*(1+mass_error), Config.MASS*(1-mass_error),
+               Config.MASS, Config.MASS])
+    drags = (list(vehicle_drags) if vehicle_drags is not None else
+             [Config.DRAG] * 4)
+    if len(masses) != 4 or len(drags) != 4:
+        raise ValueError("vehicle_masses and vehicle_drags must each contain four values")
+    physics = [VehicleModel(mass=m, drag=d) for m, d in zip(masses, drags)]
     states  = [s.copy() for s in STARTS]
     trajs   = {i: {'traj':[STARTS[i].copy()],'success':False,
                    'collision':False,'steps':0} for i in range(4)}
@@ -183,8 +192,10 @@ def run_simulation(controllers, env, noise=0.0, disturbance=0.0,
     te   = (Config.SIM_STEPS-np.mean(oks))/Config.SIM_STEPS if oks else 0.0
     uu   = unc_safe/max(1,unc_enters)
     ct   = float(np.mean(compute_ms)) if compute_ms else 0.0
+    ct95 = float(np.percentile(compute_ms, 95)) if compute_ms else 0.0
     return dict(SR=sr,AvgDist=avgd,SC=sc,Cost=tot_cost/n,Jerk=tot_jerk/n,
-                CR=cr,TE=te,UU=uu,ComputeMs=ct,VR=vr,Trajectories=trajs)
+                CR=cr,TE=te,UU=uu,ComputeMs=ct,ComputeP95Ms=ct95,
+                VR=vr,Trajectories=trajs)
 
 
 def _multi_seed(ctrl_fn, env_fn, seeds=None, **kw):
@@ -201,10 +212,14 @@ def _multi_seed(ctrl_fn, env_fn, seeds=None, **kw):
 # ─────────────────────────────────────────────────────────────────────────────
 #  Data generation
 # ─────────────────────────────────────────────────────────────────────────────
-def _gen_data():
+def _gen_data(return_metadata=False):
     data = {i:[] for i in range(4)}
+    metadata = {}
     for i,mass in enumerate(MASS_DIST[:4]):
-        p = VehicleModel(mass=mass, drag=np.random.uniform(0.02,0.10))
+        drag = float(np.random.uniform(0.02,0.10))
+        p = VehicleModel(mass=mass, drag=drag)
+        metadata[i] = {'mass_kg': float(mass), 'wheelbase_m': float(Config.L),
+                       'drag': drag}
         for _ in range(Config.N_DATA):
             s  = np.array([np.random.uniform(-22,22),np.random.uniform(-22,22),
                            np.random.uniform(0,12),np.random.uniform(-np.pi,np.pi)])
@@ -212,7 +227,7 @@ def _gen_data():
             nl = np.random.choice([0.,0.05,0.15,0.3],p=[.4,.3,.2,.1])
             df = np.random.choice([0.,1.0],p=[.8,.2])
             data[i].append((s, u, p.step(s,u,noise_std=nl,disturbance=df)))
-    return data
+    return (data, metadata) if return_metadata else data
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -339,7 +354,6 @@ def exp2_fl_convergence(data):
         ('Local Only', LocalClient,    {}),
         ('FedAvg',     FedAvgClient,   {}),
         ('DP-FedAvg',  DPFedAvgClient, {'noise_mult':Config.DP_NOISE_MULT}),
-        ('Scaffold',   ScaffoldClient, {}),
         ('MOON',       MOONClient,     {}),
         ('Prox-FL',    ProxFLClient,  {}),
         ('DP-Prox-FL', DPProxFLClient,{'noise_mult':Config.DP_NOISE_MULT}),
@@ -368,24 +382,21 @@ def exp2_fl_convergence(data):
                     wg = (srv.aggregate_scaffold(cli,w0) if is_sc
                           else srv.aggregate(cli))
                 mses.append(float(np.mean(ms_r)))
-                drifts.append(srv.client_drift(cli) if Cls!=LocalClient else 0.0)
+                drifts.append(srv.client_drift(cli) if Cls!=LocalClient else np.nan)
             hist[f'{name}_MSE']   = mses
             hist[f'{name}_Drift'] = drifts
 
-        def _cr(s):
-            t=min(s)*1.5
-            for i,v in enumerate(s):
-                if v<=t: return i+1
-            return Config.ROUNDS
         summary.append({'Method':name,'Final MSE':round(mses[-1],4),
-                         'Final Drift':round(drifts[-1],3),'Conv. Round':_cr(mses)})
+                         'Final Drift':('N/A' if Cls==LocalClient
+                                        else round(drifts[-1],3))})
 
     pd.DataFrame(hist).to_excel(
         os.path.join(Config.RESULTS_DIR,'exp2_fl_convergence.xlsx'),index=False)
     pd.DataFrame(summary).to_excel(
         os.path.join(Config.RESULTS_DIR,'exp2_fl_summary.xlsx'),index=False)
     with _t('Exp2 FL conv','plots'):
-        plot_fl_curves(hist,[s[0] for s in fl_specs],'exp2_mse.pdf','exp2_drift.pdf')
+        plot_fl_curves(hist, [s[0] for s in fl_specs],
+                       'exp2_training_dynamics.pdf')
     print("  Exp2 done.")
 
 
@@ -451,7 +462,7 @@ def exp4_ablation(fl_models):
     with _t('Exp4 Ablation','plots'):
         # v5: 两张独立图 — 可靠性(SR+SC) 和 效率(Cost+Jerk)
         plot_ablation_reliability(df, 'exp4_ablation_reliability.pdf')
-        plot_ablation_efficiency(df,  'exp4_ablation_efficiency.pdf')
+        plot_ablation_efficiency(df, 'exp4_ablation_efficiency.pdf')
     print("  Exp4 done.")
 
 

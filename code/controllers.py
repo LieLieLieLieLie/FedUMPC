@@ -457,6 +457,105 @@ class FedRMPCController(_MPCBase):
 
         return bnn_states, unc, phy_states
 
+    def _safe_bnn_rollout_batch(self, u_batch, state):
+        """Evaluate all finite MPC candidates with one MC batch per horizon step.
+
+        The rollout remains recursive, but candidate trajectories are independent
+        and can therefore share each neural-network launch.  This preserves the
+        equations used by :meth:`_safe_bnn_rollout` while removing the dominant
+        candidate-level Python/GPU synchronization overhead.
+        """
+        n_candidates = u_batch.shape[0]
+        phy_states = np.empty((n_candidates, self.H, 4), dtype=float)
+        for j in range(n_candidates):
+            phy_states[j] = self._rollout(u_batch[j], state)
+
+        bnn_states = np.empty_like(phy_states)
+        unc = np.empty((n_candidates, self.H), dtype=np.float32)
+        curr = np.repeat(np.asarray(state, dtype=float)[None, :],
+                         n_candidates, axis=0)
+
+        for h in range(self.H):
+            mean, var = self.bnn.predict_horizon(curr, u_batch[:, h, :])
+            mean = np.clip(mean, -_MAX_INC, _MAX_INC)
+            u_std = np.sqrt(np.maximum(var, 0.0)).astype(np.float32)
+            unc[:, h] = u_std
+            prev_phy = (np.repeat(np.asarray(state, dtype=float)[None, :],
+                                  n_candidates, axis=0)
+                        if h == 0 else phy_states[:, h - 1, :])
+            phy_inc = phy_states[:, h, :] - prev_phy
+            phy_mag = np.linalg.norm(phy_inc, axis=1)
+            mismatch = np.linalg.norm(mean - phy_inc, axis=1)
+            trust_unc = np.exp(
+                -u_std / max(Config.BNN_TRUST_UNC_SCALE, 1e-6))
+            trust_dyn = np.exp(
+                -mismatch / np.maximum(phy_mag + 0.2, 0.2))
+            trust = np.clip(trust_unc * trust_dyn, 0.0, 0.55)[:, None]
+            curr = curr + (1.0 - trust) * phy_inc + trust * mean
+            curr[:, 0] = np.clip(curr[:, 0], -Config.WORLD_LIMIT,
+                                 Config.WORLD_LIMIT)
+            curr[:, 1] = np.clip(curr[:, 1], -Config.WORLD_LIMIT,
+                                 Config.WORLD_LIMIT)
+            bnn_states[:, h, :] = curr
+
+        return bnn_states, unc, phy_states
+
+    def _cost_many(self, guesses, state, target):
+        """Vectorized finite-candidate objective used when SLSQP is disabled."""
+        u_batch = np.asarray(guesses, dtype=float).reshape(-1, self.H, 2)
+        if not self.use_unc:
+            return np.asarray([self._cost(u.reshape(-1), state, target)
+                               for u in u_batch], dtype=float)
+
+        bnn_states, unc, phy_states = self._safe_bnn_rollout_batch(
+            u_batch, state)
+        dist = np.linalg.norm(phy_states[:, :, :2] - target[None, None, :2],
+                              axis=2)
+        ctrl = np.sum(u_batch ** 2, axis=2)
+        mismatch = np.linalg.norm(
+            bnn_states[:, :, :2] - phy_states[:, :, :2], axis=2)
+        prev = np.repeat(self.u_prev.reshape(1, self.H, 2),
+                         len(u_batch), axis=0)[:, :1, :]
+        du = np.diff(np.concatenate([prev, u_batch], axis=1), axis=1)
+
+        values = (Config.FED_TRACKING_BOOST * Config.Q_TRACKING
+                  * np.sum(dist ** 2, axis=1)
+                  + Config.FED_TERMINAL_BOOST * Config.Q_TERMINAL
+                  * dist[:, -1] ** 2
+                  + Config.R_CONTROL * np.sum(ctrl, axis=1)
+                  + Config.FED_SMOOTHNESS_WEIGHT
+                  * np.sum(du ** 2, axis=(1, 2))
+                  + np.sum(self._lam_h[None, :] * unc, axis=1)
+                  + Config.FED_PROX_MISMATCH_WEIGHT * Config.Q_TRACKING
+                  * np.sum(mismatch ** 2, axis=1))
+
+        base_margin = Config.SAFETY_MARGIN + Config.ROBUST_BETA * 0.20
+        margins = base_margin + np.clip(
+            Config.ROBUST_BETA * Config.UNCERTAINTY_MARGIN_SCALE
+            * unc * self._inflate[None, :],
+            0.0, Config.MAX_UNCERTAINTY_MARGIN)
+        for j in range(len(u_batch)):
+            values[j] += sum(self._wall_cost(s) for s in phy_states[j])
+            values[j] += sum(self._obstacle_cost(phy_states[j, h], margins[j, h])
+                             for h in range(self.H))
+        return np.asarray(values, dtype=float)
+
+    def _solve(self, state, target):
+        if getattr(Config, 'USE_SLSQP_REFINEMENT', False):
+            return super()._solve(state, target)
+        guesses = self._initial_guesses(state, target)
+        try:
+            values = self._cost_many(guesses, state, target)
+            best_idx = int(np.nanargmin(values))
+            u_seq = np.clip(np.asarray(guesses[best_idx]), self._lo, self._hi)
+        except Exception:
+            # Retain the scalar path as a conservative fallback so that a
+            # device-specific batching failure cannot terminate a rollout.
+            return super()._solve(state, target)
+        self.u_prev = np.clip(np.roll(u_seq, -2), self._lo, self._hi)
+        self.u_prev[-2:] = u_seq[-2:]
+        return u_seq[:2]
+
     def _cost(self, u_flat, state, target):
         u = u_flat.reshape(self.H, 2)
 

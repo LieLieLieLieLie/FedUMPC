@@ -23,7 +23,7 @@
     <geom type="box" pos="-0.05 0 0.047" size="0.035 22 0.012" rgba="0.95 0.82 0.20 0.75" contype="0" conaffinity="0"/>
     <geom name="obstacle_0" type="cylinder" pos="-9.000000 -0.500000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_1" type="cylinder" pos="9.000000 0.500000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_2" type="cylinder" pos="-0.500000 -9.000000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_3" type="cylinder" pos="0.500000 9.000000 0.80" size="2.200000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_4" type="cylinder" pos="0.000000 0.000000 0.80" size="2.500000 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_5" type="cylinder" pos="5.835260 -14.277727 0.80" size="1.221198 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_6" type="cylinder" pos="-10.100102 -10.371011 0.80" size="1.546652 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_7" type="cylinder" pos="13.547040 -7.149619 0.80" size="1.550865 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_8" type="cylinder" pos="4.158087 13.677032 0.80" size="1.227550 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_9" type="cylinder" pos="-10.101184 -15.523363 0.80" size="1.359123 0.80" material="obstacle" contype="1" conaffinity="2"/><geom name="obstacle_10" type="cylinder" pos="13.347922 11.670088 0.80" size="1.219979 0.80" material="obstacle" contype="1" conaffinity="2"/>
     <site name="start_0" type="cylinder" pos="-20.0 -2.0 0.035" size="0.70 0.025" rgba="0.920 0.180 0.160 1.000"/><site name="goal_0" type="cylinder" pos="20.0 -2.0 0.040" size="0.90 0.030" rgba="0.920 0.180 0.160 0.35"/><site name="start_1" type="cylinder" pos="20.0 2.0 0.035" size="0.70 0.025" rgba="0.100 0.450 0.880 1.000"/><site name="goal_1" type="cylinder" pos="-20.0 2.0 0.040" size="0.90 0.030" rgba="0.100 0.450 0.880 0.35"/><site name="start_2" type="cylinder" pos="-2.0 -20.0 0.035" size="0.70 0.025" rgba="0.120 0.680 0.300 1.000"/><site name="goal_2" type="cylinder" pos="-2.0 20.0 0.040" size="0.90 0.030" rgba="0.120 0.680 0.300 0.35"/><site name="start_3" type="cylinder" pos="2.0 20.0 0.035" size="0.70 0.025" rgba="0.950 0.550 0.080 1.000"/><site name="goal_3" type="cylinder" pos="2.0 -20.0 0.040" size="0.90 0.030" rgba="0.950 0.550 0.080 0.35"/>
-
+    
             <body name="vehicle_0" pos="-20.0 -2.0 0.38">
               <joint name="vehicle_0_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
               <joint name="vehicle_0_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
@@ -35,7 +35,7 @@
               <site name="vehicle_0_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
                     rgba="1 1 0.75 1"/>
             </body>
-
+            
             <body name="vehicle_1" pos="20.0 2.0 0.38">
               <joint name="vehicle_1_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
               <joint name="vehicle_1_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
@@ -47,7 +47,7 @@
               <site name="vehicle_1_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
                     rgba="1 1 0.75 1"/>
             </body>
-
+            
             <body name="vehicle_2" pos="-2.0 -20.0 0.38">
               <joint name="vehicle_2_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
               <joint name="vehicle_2_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
@@ -59,7 +59,7 @@
               <site name="vehicle_2_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
                     rgba="1 1 0.75 1"/>
             </body>
-
+            
             <body name="vehicle_3" pos="2.0 20.0 0.38">
               <joint name="vehicle_3_x" type="slide" axis="1 0 0" limited="true" range="-44 44"/>
               <joint name="vehicle_3_y" type="slide" axis="0 1 0" limited="true" range="-44 44"/>
@@ -71,7 +71,7 @@
               <site name="vehicle_3_nose" type="sphere" pos="0.92 0 0.30" size="0.12"
                     rgba="1 1 0.75 1"/>
             </body>
-
+            
   </worldbody>
   <actuator>
     <motor name="vehicle_0_fx" joint="vehicle_0_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_0_fy" joint="vehicle_0_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_0_tau" joint="vehicle_0_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_1_fx" joint="vehicle_1_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_1_fy" joint="vehicle_1_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_1_tau" joint="vehicle_1_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_2_fx" joint="vehicle_2_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_2_fy" joint="vehicle_2_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_2_tau" joint="vehicle_2_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/><motor name="vehicle_3_fx" joint="vehicle_3_x" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_3_fy" joint="vehicle_3_y" gear="1" ctrllimited="true" ctrlrange="-12000 12000"/><motor name="vehicle_3_tau" joint="vehicle_3_yaw" gear="1" ctrllimited="true" ctrlrange="-6000 6000"/>
