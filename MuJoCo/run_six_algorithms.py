@@ -49,7 +49,7 @@ MAX_ACCEL = 2.0
 WORLD_LIMIT = 22.0
 SAFETY_MARGIN = 1.35
 
-# MuJoCo deployment parameters for the implementation-matched FedRMPC cost.
+# MuJoCo deployment parameters for the implementation-matched FedUMPC cost.
 # They are module-level constants so the documented tuning audit can evaluate
 # the same controller without introducing direction-specific hidden logic.
 FED_PATH_WEIGHT = 120.0
@@ -68,7 +68,7 @@ METHODS = (
     "Stochastic MPC",
     "GP-MPC",
     "Robust MPC",
-    "FedRMPC",
+    "FedUMPC",
 )
 
 STARTS = np.array(
@@ -205,7 +205,7 @@ def make_scene_xml(obstacles: list[dict[str, float]]) -> str:
         )
 
     return f"""
-<mujoco model="FedRMPC intersection">
+<mujoco model="FedUMPC intersection">
   <compiler angle="radian" autolimits="true"/>
   <option timestep="{DT_PHYSICS}" gravity="0 0 0" integrator="RK4" iterations="80"/>
   <size nconmax="300" njmax="1000"/>
@@ -634,7 +634,7 @@ class SamplingMPC:
 
     def _candidates(self, state: np.ndarray, target: np.ndarray) -> list[np.ndarray]:
         candidates = [self._pursuit_sequence(state, target, None, bias) for bias in (-0.45, -0.20, 0.0, 0.20, 0.45)]
-        if self.method == "FedRMPC":
+        if self.method == "FedUMPC":
             candidates.extend(
                 self._reference_sequence(state, target, bias)
                 for bias in (-0.06, 0.0, 0.06)
@@ -701,11 +701,11 @@ class SamplingMPC:
             return base + self._obstacle_penalty(nominal, SAFETY_MARGIN + 2.2 * sigmas, soft_weight=280.0)
         if self.method == "Robust MPC":
             return base + self._obstacle_penalty(nominal, np.full(HORIZON, SAFETY_MARGIN + 0.60), soft_weight=390.0)
-        if self.method == "FedRMPC":
+        if self.method == "FedUMPC":
             # Keep candidate search in the homotopy class of the shortest
             # inflated-obstacle path unless the uncertainty-aware objective has
             # a compelling local reason to deviate.  This regularizer acts on
-            # the candidate rollout; it does not bypass the FedRMPC cost.
+            # the candidate rollout; it does not bypass the FedUMPC cost.
             if self.reference_samples is not None:
                 path_distance = np.min(
                     np.linalg.norm(
@@ -1226,7 +1226,7 @@ def parse_args():
     if not 0.25 <= args.speed <= 8.0:
         parser.error("--speed must be between 0.25 and 8")
     if (args.viewer or args.live_viewer) and not args.method:
-        parser.error("viewer mode requires --method, for example: --method FedRMPC --viewer")
+        parser.error("viewer mode requires --method, for example: --method FedUMPC --viewer")
     if (args.viewer or args.live_viewer) and (args.rebuild_figure or args.no_render):
         parser.error("viewer mode cannot be combined with --rebuild-figure or --no-render")
     if args.viewer and args.live_viewer:
@@ -1302,7 +1302,7 @@ def main():
     metrics_path = OUTPUT / "metrics.json"
     for method in selected:
         print(f"[MuJoCo] Running {method} ...", flush=True)
-        if method == "FedRMPC":
+        if method == "FedUMPC":
             # Fix the MC-dropout stream so single-method and six-method runs
             # reproduce the deployment configuration selected by the audit.
             bnn.rng = np.random.default_rng(args.seed + 9000)
