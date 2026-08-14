@@ -1,5 +1,5 @@
 
-<mujoco model="FedRMPC intersection">
+<mujoco model="FedUMPC intersection">
   <compiler angle="radian" autolimits="true"/>
   <option timestep="0.01" gravity="0 0 0" integrator="RK4" iterations="80"/>
   <size nconmax="300" njmax="1000"/>
