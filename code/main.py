@@ -31,7 +31,7 @@ from utils import (
 )
 from controllers import (
     LinearMPC, TubeMPC, StochasticMPC, GP_MPC,
-    RobustMPC, FedRMPCController,
+    RobustMPC, FedUMPCController,
 )
 from federated import (
     FedServer,
@@ -49,7 +49,7 @@ from models import BNN
 _TIMING = []   # list of dicts: {phase, method/detail, seconds, note}
 
 def _t(phase, detail='', note=''):
-    """Context-manager-style timer.  Usage: with _t('Exp1','FedRMPC'): ..."""
+    """Context-manager-style timer.  Usage: with _t('Exp1','FedUMPC'): ..."""
     return _Timer(phase, detail, note)
 
 class _Timer:
@@ -295,7 +295,7 @@ def exp1_mpc_comparison(fl_models):
         'Stochastic MPC': lambda env: [StochasticMPC(env)                 for _ in range(4)],
         'GP-MPC'        : lambda env: [GP_MPC(env)                        for _ in range(4)],
         'Robust MPC'    : lambda env: [RobustMPC(env)                     for _ in range(4)],
-        'FedRMPC'       : lambda env: [FedRMPCController(env, bnn)        for _ in range(4)],
+        'FedUMPC'       : lambda env: [FedUMPCController(env, bnn)        for _ in range(4)],
     }
 
     results = {}
@@ -308,13 +308,13 @@ def exp1_mpc_comparison(fl_models):
         env_vis = CrossingEnv(seed=123, obstacle_density=D_OBS)
         plot_uncertainty_surface(bnn, env_vis, 'exp1_uncertainty_heatmap.pdf')
 
-        # 选取FedRMPC表现最好的seed用于轨迹可视化
+        # 选取FedUMPC表现最好的seed用于轨迹可视化
         # 避免"轨迹4/4但SR不到100%"的困惑 (SR是多seed平均)
         best_seed = Config.SEEDS[-1]
         best_n_succ = -1
         for s in Config.SEEDS:
             env_try = CrossingEnv(seed=s, obstacle_density=D_OBS)
-            trial = run_simulation(mpc_methods['FedRMPC'](env_try), env_try, seed=s)
+            trial = run_simulation(mpc_methods['FedUMPC'](env_try), env_try, seed=s)
             n_succ = sum(1 for t in trial['Trajectories'].values() if t.get('success', False))
             if n_succ > best_n_succ:
                 best_n_succ = n_succ
@@ -419,7 +419,7 @@ def exp3_robustness(fl_models):
         'Stochastic MPC': lambda env:[StochasticMPC(env)          for _ in range(4)],
         'GP-MPC'        : lambda env:[GP_MPC(env)                 for _ in range(4)],
         'Robust MPC'    : lambda env:[RobustMPC(env)              for _ in range(4)],
-        'FedRMPC'       : lambda env:[FedRMPCController(env,bnn)  for _ in range(4)],
+        'FedUMPC'       : lambda env:[FedUMPCController(env,bnn)  for _ in range(4)],
     }
     rows = []
     for sc_name, sc_kw in scenarios:
@@ -446,9 +446,9 @@ def exp4_ablation(fl_models):
     local_bnn  = fl_models['Local Only']
     env_fn = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
     cfgs = {
-        'Full FedRMPC'   : lambda env:[FedRMPCController(env,global_bnn,True)  for _ in range(4)],
-        'w/o Uncertainty': lambda env:[FedRMPCController(env,global_bnn,False) for _ in range(4)],
-        'w/o Federated'  : lambda env:[FedRMPCController(env,local_bnn, True)  for _ in range(4)],
+        'Full FedUMPC'   : lambda env:[FedUMPCController(env,global_bnn,True)  for _ in range(4)],
+        'w/o Uncertainty': lambda env:[FedUMPCController(env,global_bnn,False) for _ in range(4)],
+        'w/o Federated'  : lambda env:[FedUMPCController(env,local_bnn, True)  for _ in range(4)],
     }
     rows = []
     for cname, ctrl_fn in cfgs.items():
@@ -494,7 +494,7 @@ def exp5_sensitivity(data):
         with _t('Exp5 Sensitivity', f'mu={mu:.3f}'):
             b = _quick_bnn(mu)
             agg = _multi_seed(lambda env,_b=b:
-                              [FedRMPCController(env,_b) for _ in range(4)],
+                              [FedUMPCController(env,_b) for _ in range(4)],
                               env_fn, seeds=seeds)
             mu_sr.append(agg['SR_mean']); mu_sc.append(agg['SC_mean'])
 
@@ -516,7 +516,7 @@ def exp5_sensitivity(data):
     for lam in lam_vals:
         with _t('Exp5 Sensitivity', f'lambda={lam:.1f}'):
             agg = _multi_seed(
-                lambda env,_l=lam: [FedRMPCController(env,bnn_fixed,lambda0=_l)
+                lambda env,_l=lam: [FedUMPCController(env,bnn_fixed,lambda0=_l)
                                     for _ in range(4)],
                 env_fn, seeds=seeds)
             lam_sr.append(agg['SR_mean']); lam_sc.append(agg['SC_mean'])
@@ -582,7 +582,7 @@ def exp6_privacy_utility(data):
                 ctrl_kwargs = {}   # v6: no lambda boost; let lower MSE drive SR
                 agg = _multi_seed(
                     lambda env,_b=bnn,_kw=ctrl_kwargs:
-                        [FedRMPCController(env,_b,**_kw) for _ in range(4)],
+                        [FedUMPCController(env,_b,**_kw) for _ in range(4)],
                     env_fn, seeds=eval_seeds)
             ae = (_compute_privacy_spent(nm,Config.DP_MAX_GRAD_NORM,
                                           Config.N_DATA,Config.BATCH_SIZE,
@@ -610,7 +610,7 @@ if __name__ == '__main__':
 
     mode = 'full' if '--full' in sys.argv else 'fast'
     print(f'\n{"="*55}')
-    print(f'  FedRMPC – IEEE Transactions Experiment Suite')
+    print(f'  FedUMPC – IEEE Transactions Experiment Suite')
     print(f'  Mode: {mode.upper()}   Device: {Config.DEVICE}')
     print(f'  SIM_STEPS={Config.SIM_STEPS}  N_SEEDS={Config.N_SEEDS}  '
           f'ROUNDS={Config.ROUNDS}  H={Config.HORIZON}  '
