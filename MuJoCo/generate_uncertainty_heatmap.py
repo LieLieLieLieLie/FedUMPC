@@ -13,7 +13,7 @@ import run_six_algorithms as core
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_OUTPUT = ROOT.parent / "IoTJ_FedRMPC" / "figures" / "Experiment" / "exp1_uncertainty_heatmap.pdf"
+DEFAULT_OUTPUT = ROOT.parent / "IoTJ_FedUMPC" / "figures" / "Experiment" / "exp1_uncertainty_heatmap.pdf"
 
 
 def parse_args() -> argparse.Namespace:
