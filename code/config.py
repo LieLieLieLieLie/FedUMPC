@@ -10,9 +10,9 @@ CHANGELOG v5 (2026-05-19):
   - exp4: 拆分为两张独立图(reliability+efficiency) [main.py/utils.py]
   - exp2: Prox-FL/DP-Prox-FL加粗标注proposed [utils.py]
   - exp6: 删除suptitle [utils.py]
-  - 轨迹: 自动选取FedRMPC最优seed可视化 [main.py]
+  - 轨迹: 自动选取FedUMPC最优seed可视化 [main.py]
 
-  FedRMPC参数: 全部保持v1原始值(已验证: SR=75%,SC=76.9%,CR=0.00)
+  FedUMPC参数: 全部保持v1原始值(已验证: SR=75%,SC=76.9%,CR=0.00)
 """
 import torch
 import os
@@ -162,31 +162,31 @@ class Config:
     PALETTE = ['#FF6666','#FFAA53','#50CC55','#00DDDD','#3399FF','#6666FF','#9933FF']
 
     COLORS = {
-        'FedRMPC':'#FF6666',       'Linear MPC':'#FFAA53',
+        'FedUMPC':'#FF6666',       'Linear MPC':'#FFAA53',
         'Tube MPC':'#50CC55',      'Stochastic MPC':'#00DDDD',
         'GP-MPC':'#3399FF',        'Robust MPC':'#6666FF',
         'DP-Prox-FL':'#FF6666',    'DP-FedAvg':'#FFAA53',
         'Prox-FL':'#50CC55',       'FedAvg':'#00DDDD',
         'Local Only':'#3399FF',    'Scaffold':'#6666FF',   'MOON':'#9933FF',
-        'Full FedRMPC':'#FF6666',  'w/o Uncertainty':'#FFAA53',
+        'Full FedUMPC':'#FF6666',  'w/o Uncertainty':'#FFAA53',
         'w/o Federated':'#50CC55',
     }
     MARKERS = {
         'Linear MPC':'v',   'Tube MPC':'s',         'Stochastic MPC':'^',
-        'GP-MPC':'D',       'Robust MPC':'p',        'FedRMPC':'o',
+        'GP-MPC':'D',       'Robust MPC':'p',        'FedUMPC':'o',
         'Local Only':'v',   'FedAvg':'s',            'DP-FedAvg':'^',
         'Scaffold':'D',     'MOON':'p',              'Prox-FL':'o',
         'DP-Prox-FL':'h',
-        'Full FedRMPC':'o', 'w/o Uncertainty':'D',   'w/o Federated':'s',
+        'Full FedUMPC':'o', 'w/o Uncertainty':'D',   'w/o Federated':'s',
     }
     LINESTYLES = {
         'Linear MPC':(0,(3,1)),     'Tube MPC':(0,(5,1)),
         'Stochastic MPC':(0,(1,1)), 'GP-MPC':(0,(3,1,1,1)),
-        'Robust MPC':'--',          'FedRMPC':'-',
+        'Robust MPC':'--',          'FedUMPC':'-',
         'Local Only':(0,(3,1)),     'FedAvg':(0,(5,1)),
         'DP-FedAvg':(0,(1,1)),      'Scaffold':(0,(3,1,1,1)),
         'MOON':'--',                'Prox-FL':'-',
         'DP-Prox-FL':(0,(5,2,1,2)),
-        'Full FedRMPC':'-',         'w/o Uncertainty':'--',
+        'Full FedUMPC':'-',         'w/o Uncertainty':'--',
         'w/o Federated':(0,(3,1)),
     }
