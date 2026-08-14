@@ -1,8 +1,8 @@
-# MuJoCo Simulation for FedRMPC
+# MuJoCo Simulation for FedUMPC
 
 This directory contains the MuJoCo simulation used for the paper's cross-simulator
 deployment study. Six controllers are evaluated in the same seed-123 intersection:
-Linear MPC, Tube MPC, Stochastic MPC, GP-MPC, Robust MPC, and FedRMPC. Every method
+Linear MPC, Tube MPC, Stochastic MPC, GP-MPC, Robust MPC, and FedUMPC. Every method
 uses the same starts, goals, static obstacles, plant, control period, and evaluation
 rules. Vehicle--obstacle contact remains active; vehicle--vehicle contact is disabled
 because the manuscript evaluates four independent routes rather than interactive
@@ -31,17 +31,17 @@ python run_six_algorithms.py --no-render
 Run or inspect one controller in the interactive Viewer:
 
 ```bash
-python run_six_algorithms.py --method FedRMPC --viewer
+python run_six_algorithms.py --method FedUMPC --viewer
 ```
 
 The Viewer is a replay of the saved MuJoCo body-state trajectory. Use
 `--live-viewer` only for controller-in-the-loop debugging. In either Viewer mode,
 press `R` to replay, Space to pause, and `+`/`-` to change playback speed.
 
-The finite FedRMPC parameter search reported for seed 123 is reproducible with:
+The finite FedUMPC parameter search reported for seed 123 is reproducible with:
 
 ```bash
-python tune_fedrmpc.py
+python tune_fedumpc.py
 ```
 
 It ranks 13 predeclared configurations lexicographically by successful routes,
@@ -71,7 +71,7 @@ B, C, and D move one after another. It reuses the same vehicle model, obstacles,
 controllers, but it is a demonstration rather than an additional paper experiment:
 
 ```bash
-python run_sequential_vehicles.py --method FedRMPC
+python run_sequential_vehicles.py --method FedUMPC
 ```
 
 Use `--recompute --no-viewer` to regenerate only its saved timeline and metrics.
@@ -80,7 +80,7 @@ Use `--recompute --no-viewer` to regenerate only its saved timeline and metrics.
 
 `scene_seed123.xml` is the audited MuJoCo scene. `run_six_algorithms.py` implements
 the six closed-loop comparisons; `capture_official_viewer_frames.pyw` captures the
-paper-frame sources; `tune_fedrmpc.py` records the finite configuration search; and
+paper-frame sources; `tune_fedumpc.py` records the finite configuration search; and
 `validate_outputs.py` checks method coverage, frame resolution, trajectories, and
 the MuJoCo model. Generated artifacts are stored in `outputs/` and ignored by Git.
 
