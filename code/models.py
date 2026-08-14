@@ -1,6 +1,6 @@
 # models.py
 """
-BNN with fully optimised MC Dropout inference for FedRMPC.
+BNN with fully optimised MC Dropout inference for FedUMPC.
 
 Performance architecture:
 ──────────────────────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ class BNN(nn.Module):
         mean, var_tr = self._mc_batch(xu)
         return mean[0], float(var_tr[0])
 
-    # ── horizon-batch: for FedRMPC _cost() — THE fast path ───────────────────
+    # ── horizon-batch: for FedUMPC _cost() — THE fast path ───────────────────
     def predict_horizon(self, states: np.ndarray, actions: np.ndarray):
         """
         states  : (H, 4)  predicted states along candidate trajectory
@@ -109,7 +109,7 @@ class BNN(nn.Module):
         var_trs : (H,)    np — uncertainty scalars   U_i(k+h)
 
         One call replaces H × M serial forward() calls.
-        Used exclusively inside FedRMPCController._cost().
+        Used exclusively inside FedUMPCController._cost().
         """
         xu = torch.tensor(
             np.concatenate([states, actions], axis=1),   # (H, 6)
