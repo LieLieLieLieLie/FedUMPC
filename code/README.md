@@ -1,8 +1,8 @@
-# FedRMPC
+# FedUMPC
 
-Official implementation of **FedRMPC: Federated Uncertainty-Aware Predictive Control for Heterogeneous Internet-of-Vehicles Systems**.
+Official implementation of **FedUMPC: Federated Uncertainty-Aware Model Predictive Control for Heterogeneous Internet of Vehicles**.
 
-FedRMPC is a safety-oriented edge--cloud architecture that combines federated dynamics learning, MC-dropout epistemic-uncertainty estimation, and vehicle-local model predictive control. The physics model supplies the nominal geometric rollout, while the shared predictor contributes candidate-dependent uncertainty, learned-rollout disagreement, and adaptive static-obstacle risk shaping. The implementation evaluates independent four-vehicle rollouts under both common and physically heterogeneous plants; it does not implement coupled trajectory negotiation or certified safety.
+FedUMPC is a safety-oriented edge--cloud architecture that combines federated dynamics learning, MC-dropout epistemic-uncertainty estimation, and vehicle-local model predictive control. The physics model supplies the nominal geometric rollout, while the shared predictor contributes candidate-dependent uncertainty, learned-rollout disagreement, and adaptive static-obstacle risk shaping. The implementation evaluates independent four-vehicle rollouts under both common and physically heterogeneous plants; it does not implement coupled trajectory negotiation or certified safety.
 
 ## Highlights
 
@@ -19,7 +19,7 @@ The benchmark evaluates static-obstacle avoidance and does not model dynamic veh
 ```text
 .
 ├── config.py         # Global simulation, MPC, FL, BNN, DP, and plotting parameters
-├── controllers.py    # MPC baselines and FedRMPC controller
+├── controllers.py    # MPC baselines and FedUMPC controller
 ├── federated.py      # Federated clients, server aggregation, and privacy utilities
 ├── main.py           # End-to-end experiment entry point
 ├── models.py         # Neural dynamics predictor with MC-dropout uncertainty
@@ -95,8 +95,8 @@ The pipeline in `main.py` executes:
 If this repository is useful for your research, please cite the paper:
 
 ```bibtex
-@article{fedrmpc2026,
-  title={FedRMPC: Federated Uncertainty-Aware Predictive Control for Heterogeneous Internet-of-Vehicles Systems},
+@article{fedumpc2026,
+  title={FedUMPC: Federated Uncertainty-Aware Model Predictive Control for Heterogeneous Internet of Vehicles},
   author={Zhou, Yuanqiang and Yin, Zilong and Zhu, Yan-Ran and Wang, Haoyu and Li, Dewei and Gao, Furong and Chen, Hong},
   year={2026}
 }
