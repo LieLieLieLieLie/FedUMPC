@@ -1,7 +1,7 @@
-# FedRMPC
+# FedUMPC
 
-Official implementation of **FedRMPC: Federated Uncertainty-Aware Predictive
-Control for Heterogeneous Internet-of-Vehicles Systems**.
+Official implementation of **FedUMPC: Federated Uncertainty-Aware Model
+Predictive Control for Heterogeneous Internet of Vehicles**.
 
 - `code/` contains the cleaned learning, controller, five-seed evaluation, and
   data-scarcity experiment implementation.
