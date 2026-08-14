@@ -1,4 +1,4 @@
-﻿# utils.py
+# utils.py
 import numpy as np
 try:
     import matplotlib.pyplot as plt
@@ -110,7 +110,7 @@ def plot_crossing_comparison(env, all_results, targets, starts, filename):
     method_styles = {
         'Linear MPC': {'ls': ':', 'lw': 8.0, 'z': 2},
         'Robust MPC': {'ls': '--', 'lw': 8.0, 'z': 3},
-        'FedRMPC': {'ls': '-', 'lw': 10.0, 'z': 5}
+        'FedUMPC': {'ls': '-', 'lw': 10.0, 'z': 5}
     }
 
     for i in range(Config.NUM_AGENTS):
@@ -144,7 +144,7 @@ def plot_crossing_comparison(env, all_results, targets, starts, filename):
     lines = [
         Line2D([0], [0], color=Config.COLORS['Linear MPC'], lw=8.0, ls=':', label='Linear MPC'),
         Line2D([0], [0], color=Config.COLORS['Robust MPC'], lw=8.0, ls='--', label='Robust MPC'),
-        Line2D([0], [0], color=Config.COLORS['FedRMPC'], lw=10.0, ls='-', label='FedRMPC'),
+        Line2D([0], [0], color=Config.COLORS['FedUMPC'], lw=10.0, ls='-', label='FedUMPC'),
         Line2D([0], [0], marker='s', color='w', markerfacecolor='k', markersize=24, label='Start'),
         Line2D([0], [0], marker='*', color='w', markerfacecolor='#FFD700', markeredgecolor='k', markersize=36,
                label='Goal'),
@@ -701,7 +701,7 @@ def plot_sensitivity(sens, filename):
         filename = filename.replace('.png', '.pdf')
 
     fig, axes = plt.subplots(1, 2, figsize=(20.0, 7.2))
-    pcolor = _c('FedRMPC');  scolor = _c('Robust MPC')
+    pcolor = _c('FedUMPC');  scolor = _c('Robust MPC')
 
     for ax, xvals, sr, sc, xlabel in [
         (axes[0], sens['mu_values'],     sens['mu_sr'],  sens['mu_sc'],  'Proximal Coefficient μ'),
