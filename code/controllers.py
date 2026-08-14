@@ -2,7 +2,7 @@
 """
 Bug fixes in this version:
 ──────────────────────────────────────────────────────────────────────────
-BUG 1 (FedRMPC/Stochastic SR=0, no trajectory, Cost≈0):
+BUG 1 (FedUMPC/Stochastic SR=0, no trajectory, Cost≈0):
   Root cause: BNN trained only 15 rounds with 300 samples predicts
   large incorrect increments. curr = curr + mean_inc sends the state
   flying out of bounds in 1-2 steps, triggering immediate collision
@@ -391,9 +391,9 @@ class RobustMPC(_MPCBase):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-class FedRMPCController(_MPCBase):
+class FedUMPCController(_MPCBase):
     """
-    FedRMPC with stable BNN rollout.
+    FedUMPC with stable BNN rollout.
 
     Key fix: BNN increments are CLAMPED before accumulation.
     Without clamping, an undertrained BNN (fast mode: 15 rounds, 300
@@ -572,7 +572,7 @@ class FedRMPCController(_MPCBase):
 
         # Use the calibrated analytical vehicle model as the nominal MPC
         # trajectory. The BNN supplies residual uncertainty/risk shaping, not
-        # the sole geometric path; this keeps FedRMPC as stable as Robust MPC
+        # the sole geometric path; this keeps FedUMPC as stable as Robust MPC
         # while still adapting margins by learned epistemic uncertainty.
         dist  = np.linalg.norm(phy_states[:, :2] - target[:2], axis=1)
         ctrl  = np.sum(u ** 2, axis=1)
