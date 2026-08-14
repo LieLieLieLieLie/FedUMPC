@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     matched = pd.read_csv(OUT / "exp8_matched_fl_controller.csv")
     main = pd.read_csv(OUT / "exp1_metrics_5seed.csv")
-    prox = main.loc[main["Method"] == "FedRMPC"].iloc[0].copy()
+    prox = main.loc[main["Method"] == "FedUMPC"].iloc[0].copy()
     prox["Method"] = "Prox-FL"
     matched = pd.concat(
         [matched.loc[matched["Method"] != "Prox-FL"], prox.to_frame().T],
