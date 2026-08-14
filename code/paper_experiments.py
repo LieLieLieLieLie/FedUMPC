@@ -53,7 +53,7 @@ import torch
 from scipy.stats import spearmanr
 
 from config import Config
-from controllers import (FedRMPCController, GP_MPC, LinearMPC, RobustMPC,
+from controllers import (FedUMPCController, GP_MPC, LinearMPC, RobustMPC,
                          StochasticMPC, TubeMPC)
 from federated import (DPFedAvgClient, DPProxFLClient, FedAvgClient,
                        FedServer, LocalClient, MOONClient, ProxFLClient)
@@ -181,7 +181,7 @@ def run_five_seed_main(prox_model):
         "Stochastic MPC": lambda env: [StochasticMPC(env) for _ in range(4)],
         "GP-MPC": lambda env: [GP_MPC(env) for _ in range(4)],
         "Robust MPC": lambda env: [RobustMPC(env) for _ in range(4)],
-        "FedRMPC": lambda env: [FedRMPCController(env, prox_model)
+        "FedUMPC": lambda env: [FedUMPCController(env, prox_model)
                                  for _ in range(4)],
     }
     results = {}
@@ -272,7 +272,7 @@ def run_five_seed_robustness(prox_model):
         "Stochastic MPC": lambda env: [StochasticMPC(env) for _ in range(4)],
         "GP-MPC": lambda env: [GP_MPC(env) for _ in range(4)],
         "Robust MPC": lambda env: [RobustMPC(env) for _ in range(4)],
-        "FedRMPC": lambda env: [FedRMPCController(env, prox_model)
+        "FedUMPC": lambda env: [FedUMPCController(env, prox_model)
                                   for _ in range(4)],
     }
     env_fn = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
@@ -310,7 +310,7 @@ def run_heterogeneous_plant(prox_model, metadata):
         "Tube MPC": lambda env: [TubeMPC(env) for _ in range(4)],
         "GP-MPC": lambda env: [GP_MPC(env) for _ in range(4)],
         "Robust MPC": lambda env: [RobustMPC(env) for _ in range(4)],
-        "FedRMPC": lambda env: [FedRMPCController(env, prox_model)
+        "FedUMPC": lambda env: [FedUMPCController(env, prox_model)
                                   for _ in range(4)],
     }
     env_fn = lambda s: CrossingEnv(seed=s, obstacle_density=D_OBS)
@@ -355,11 +355,11 @@ def run_heterogeneous_plant(prox_model, metadata):
 def run_matched_learner_comparison(local_models, fedavg_model, prox_model,
                                    prox_reference=None):
     configs = {
-        "Local only": lambda env: [FedRMPCController(env, local_models[i])
+        "Local only": lambda env: [FedUMPCController(env, local_models[i])
                                      for i in range(4)],
-        "FedAvg": lambda env: [FedRMPCController(env, fedavg_model)
+        "FedAvg": lambda env: [FedUMPCController(env, fedavg_model)
                                 for _ in range(4)],
-        "Prox-FL": lambda env: [FedRMPCController(env, prox_model)
+        "Prox-FL": lambda env: [FedUMPCController(env, prox_model)
                                  for _ in range(4)],
     }
     rows = []
@@ -486,7 +486,7 @@ def run_participation_stress(data):
         model, train_info = train_global(ProxFLClient, data, seed=777,
                                          participation=participation)
         agg = aggregate_runs(lambda env, m=model:
-                             [FedRMPCController(env, m) for _ in range(4)],
+                             [FedUMPCController(env, m) for _ in range(4)],
                              seeds=PARTICIPATION_SEEDS)
         rows.append({
             "Participation_rate": participation,
@@ -525,17 +525,17 @@ def run_participation_stress(data):
 
 def run_five_seed_ablation(local_models, prox_model, prox_reference=None):
     configs = {
-        "Full FedRMPC": lambda env: [FedRMPCController(env, prox_model, True)
+        "Full FedUMPC": lambda env: [FedUMPCController(env, prox_model, True)
                                        for _ in range(4)],
-        "w/o Uncertainty": lambda env: [FedRMPCController(env, prox_model, False)
+        "w/o Uncertainty": lambda env: [FedUMPCController(env, prox_model, False)
                                           for _ in range(4)],
-        "w/o Federated": lambda env: [FedRMPCController(env, local_models[i], True)
+        "w/o Federated": lambda env: [FedUMPCController(env, local_models[i], True)
                                         for i in range(4)],
     }
     rows = []
     for name, controller_fn in configs.items():
         print(f"[5-seed ablation] {name}", flush=True)
-        if name == "Full FedRMPC" and prox_reference is not None:
+        if name == "Full FedUMPC" and prox_reference is not None:
             agg = prox_reference
         else:
             reset_rng(20260811)
@@ -580,7 +580,7 @@ def run_five_seed_sensitivity(data, prox_model):
                  else _train_prox_with_mu(data, mu, seed=666))
         reset_rng(20260811)
         agg = aggregate_runs(lambda env, m=model:
-                             [FedRMPCController(env, m) for _ in range(4)])
+                             [FedUMPCController(env, m) for _ in range(4)])
         mu_rows.append({"mu": mu, "SR": agg["SR_mean"],
                         "SR_std": agg["SR_std"], "SC": agg["SC_mean"],
                         "SC_std": agg["SC_std"]})
@@ -591,7 +591,7 @@ def run_five_seed_sensitivity(data, prox_model):
         print(f"[5-seed sensitivity] lambda={value}", flush=True)
         reset_rng(20260811)
         agg = aggregate_runs(
-            lambda env, v=value: [FedRMPCController(env, prox_model, lambda0=v)
+            lambda env, v=value: [FedUMPCController(env, prox_model, lambda0=v)
                                   for _ in range(4)])
         lambda_rows.append({"lambda": value, "SR": agg["SR_mean"],
                             "SR_std": agg["SR_std"], "SC": agg["SC_mean"],
@@ -661,7 +661,7 @@ def run_five_seed_gradient_noise(data):
                 display_method = method
             reset_rng(20260811)
             agg = aggregate_runs(lambda env, m=model:
-                                 [FedRMPCController(env, m) for _ in range(4)])
+                                 [FedUMPCController(env, m) for _ in range(4)])
             rows.append({
                 "Method": display_method,
                 "Noise setting": setting,
@@ -744,7 +744,7 @@ def main():
     run_five_seed_robustness(prox_model)
     run_heterogeneous_plant(prox_model, metadata)
     run_matched_learner_comparison(local_models, fedavg_model, prox_model,
-                                   prox_reference=main_results["FedRMPC"])
+                                   prox_reference=main_results["FedUMPC"])
 
     uncertainty_df = uncertainty_error_samples(prox_model, metadata)
     uncertainty_df.to_csv(OUT / "exp7_uncertainty_error_samples.csv", index=False)
