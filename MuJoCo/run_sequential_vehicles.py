@@ -339,7 +339,7 @@ def parse_args():
     parser.add_argument(
         "--method",
         choices=core.METHODS,
-        default="FedRMPC",
+        default="FedUMPC",
         help="Controller used by all four sequential vehicles",
     )
     parser.add_argument("--seed", type=int, default=123)
