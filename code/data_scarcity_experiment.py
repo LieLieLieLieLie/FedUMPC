@@ -42,7 +42,7 @@ import pandas as pd
 import torch
 
 from config import Config
-from controllers import FedRMPCController
+from controllers import FedUMPCController
 from main import MASS_DIST, _gen_data
 from paper_experiments import (ROLLOUT_SEEDS, aggregate_runs,
                                   compact_metrics, reset_rng, train_global,
@@ -118,11 +118,11 @@ def evaluate_budget(full_data: dict[int, list[tuple]], holdout: dict,
         reset_rng(20260811)
         if method == "Local Only":
             ctrl_fn = lambda env, ms=models: [
-                FedRMPCController(env, ms[i]) for i in range(4)
+                FedUMPCController(env, ms[i]) for i in range(4)
             ]
         else:
             ctrl_fn = lambda env, model=models: [
-                FedRMPCController(env, model) for _ in range(4)
+                FedUMPCController(env, model) for _ in range(4)
             ]
         aggregate = aggregate_runs(ctrl_fn, seeds=ROLLOUT_SEEDS)
         row = compact_metrics(method, aggregate)
@@ -189,11 +189,11 @@ def main() -> None:
         reset_rng(20260811)
         if method == "Local Only":
             ctrl_fn = lambda env, ms=models: [
-                FedRMPCController(env, ms[i]) for i in range(4)
+                FedUMPCController(env, ms[i]) for i in range(4)
             ]
         else:
             ctrl_fn = lambda env, model=models: [
-                FedRMPCController(env, model) for _ in range(4)
+                FedUMPCController(env, model) for _ in range(4)
             ]
         aggregate = aggregate_runs(ctrl_fn, seeds=ROLLOUT_SEEDS)
         row = compact_metrics(method, aggregate)
