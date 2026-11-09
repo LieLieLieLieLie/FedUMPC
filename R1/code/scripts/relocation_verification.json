@@ -1,0 +1,510 @@
+{
+  "purpose": "path/import reorganization and resume chronology guard; no algorithm or measured-record changes",
+  "source_changes": [
+    {
+      "old_path": "complete_diagnostic_fixed_growth.py",
+      "new_path": "scripts/legacy/complete_diagnostic_fixed_growth.py",
+      "before_sha256": "c95139ad804b6db0c301b30accc1946d105a904f5cfbd7fb569dd4ad1fe76fd3",
+      "after_sha256": "e4cc466739cc700e9ddfabcaa9e9f71449d9d3cf1e54a0decfd2165478c69ddc",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "data_scarcity_experiment.py",
+      "new_path": "scripts/legacy/data_scarcity_experiment.py",
+      "before_sha256": "dced6849b06b8675e57bafe7a6b5a50bb0954055d825a3634f3a2cebbecce65e",
+      "after_sha256": "8fe8d416cf6463333c94d59229e6bca579415869b0b86fc36f9ff432076d01a1",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "dev_compare.py",
+      "new_path": "scripts/development/dev_compare.py",
+      "before_sha256": "ca83fa8784ffb0074dfee750cc97b6a00aa0ef7512f752809787670f2461aaf3",
+      "after_sha256": "3e81dc22f38fd12a9100eb5a171f0a4dac472304fe1a1b8eaf97f24d877b4bc9",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "paper_experiments.py",
+      "new_path": "scripts/legacy/paper_experiments.py",
+      "before_sha256": "63eff00a8f9274171f59df47b63195dbf3f0dee193ca59dbb262ef6b4e4b8e2f",
+      "after_sha256": "47d01daf313cb6a6ee799e54a99f92cd60f6c824816130ecd36b25b1cb44d10e",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "paper_extended_experiments.py",
+      "new_path": "scripts/legacy/paper_extended_experiments.py",
+      "before_sha256": "35474df6ec9b5d20b27caa23ce1af75bb6b35d935c41cf303fdc4ff9bc35cdb3",
+      "after_sha256": "2aa181664b33b12971e74af628ee847ddf4ca35961044a16f691bf37a794621a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "participation_experiment.py",
+      "new_path": "scripts/legacy/participation_experiment.py",
+      "before_sha256": "69b3061dd1629caff9bebf5492cb36879a702e186c103bbf9808d1d12bded079",
+      "after_sha256": "66d01c7a8aa01ee921c737a11e65d614a0662e9c3e4ef95b4d7f9a0773477831",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "prepare_r1_final_protocol.py",
+      "new_path": "scripts/development/prepare_r1_final_protocol.py",
+      "before_sha256": "54cec024e1633a71999065b1cba91a670a46f9cb70d6022bfcf7665fdf161415",
+      "after_sha256": "2e7c79217e9aacbf34f525929dfbdc3f7098b41504edeb9d67181d8b03b7068d",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "prepare_r1_guarded_protocol.py",
+      "new_path": "scripts/development/prepare_r1_guarded_protocol.py",
+      "before_sha256": "b4010d2af34eedc43a16c800a7c5146421053ff62d1cfbdc561775e6383eed94",
+      "after_sha256": "27baf07683e525394d5e522a2643a2eabffdf10948f88482f4c4384f2b9c6956",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "prepare_r1_nomargin_protocol.py",
+      "new_path": "scripts/development/prepare_r1_nomargin_protocol.py",
+      "before_sha256": "e0857acccbf22f1151780c962574a064d709785b51c63130acbe33184a21bfb9",
+      "after_sha256": "5da500250bc819d0bce05d39ac333bdeaba51bde73b7fcb52a5ae55cae56ed21",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "prepare_r1_refined_protocol.py",
+      "new_path": "scripts/development/prepare_r1_refined_protocol.py",
+      "before_sha256": "c938c97015e1cac089cb95f3cc7a76ed1be6b591462da599f03e6fad79dc4f5a",
+      "after_sha256": "885a080295fc43b1033629224f1cd2c4a2e1e479e606eaffe6ea2f065742988d",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_audit_scenario.py",
+      "new_path": "scripts/analysis/r1_audit_scenario.py",
+      "before_sha256": "2ea3339732bc5654d0816c1d642b29e389434330409103418d87e23fcee3d8fb",
+      "after_sha256": "9c562baebf67e1a12c64c3d031bb1db7c0fb6fac47d1934656becbdc9a335b2e",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_baselines.py",
+      "new_path": "scripts/development/r1_dev_baselines.py",
+      "before_sha256": "90b51125815413cd8e6fc4dc1e507c4c508a339931a9f8127e5307420c191c64",
+      "after_sha256": "74bf0471c7f4e7cc11c4eb45d5f0caac24f7c63dd1504919368760405fcffe87",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_learners.py",
+      "new_path": "scripts/development/r1_dev_learners.py",
+      "before_sha256": "fd792901d1d8e6b6e66da8675fe5534bca32ac97e4b6be315b215b1f0d0dd560",
+      "after_sha256": "ca15143cbf232c7ecae825ee29936a35aa62e69a02d78024160a46b72a611e71",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_nominal_guard.py",
+      "new_path": "scripts/development/r1_dev_nominal_guard.py",
+      "before_sha256": "378b1b0775a29f9afe74d222676062f3de8d7643aefda3b57823a7cce919603d",
+      "after_sha256": "79809df61fa1b96d7e96865f0e06138dd90ca1448408fe71e46f0d3ab8099050",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_residual.py",
+      "new_path": "scripts/development/r1_dev_residual.py",
+      "before_sha256": "f43675c5c9997b80307f783d96642e1dd495251ffc3b7804ce19f69908a06325",
+      "after_sha256": "f80f35d6e89e9968efdd4314340e1c5b457e0506245b031585e9ae171ce96426",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_screen_tuning.py",
+      "new_path": "scripts/development/r1_dev_screen_tuning.py",
+      "before_sha256": "d68109eeea91219f1f1c2701d5f02d278ce3ddc92ccc9b0bcea056f9857b7593",
+      "after_sha256": "69bb54aea7bc99a6436a56dd2297dd750d056da54d5352fe7e5d803bdc02cd45",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_selector.py",
+      "new_path": "scripts/development/r1_dev_selector.py",
+      "before_sha256": "ed0bdf09423bd1992daf6fa7fbd0d8079f8f0028449c7b0e24f344a8aedcca4d",
+      "after_sha256": "f048b19506390451ca62b07dff37927a793f68fe9ba0f37bd67194d04104ac3a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_small_margin.py",
+      "new_path": "scripts/development/r1_dev_small_margin.py",
+      "before_sha256": "bed771769d6ecdcb348a06166d009ffe0964e920281504b02eac22bf56c10d0c",
+      "after_sha256": "f6bfb40c3c1984613cfcd2bfaf0931f70f51440ca138fe9216b5adac3e3134c2",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_dev_uncertainty_tuning.py",
+      "new_path": "scripts/development/r1_dev_uncertainty_tuning.py",
+      "before_sha256": "0cabcc76c229bc1ecb16b95f09432e55c06d8344e68cfb289bccdc6bb3c099c0",
+      "after_sha256": "96bb79a0d80c812994f53087f54efeb8144f8679cb8ac7110aa5f5e7cec243fe",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_ensemble_margin.py",
+      "new_path": "scripts/experiments/r1_ensemble_margin.py",
+      "before_sha256": "0fb370619b0e943a47e612023437bbf79930513b81427a2343387db219a6a8a3",
+      "after_sha256": "e3d0b4c2a072c8d4dfd0e04aea76a3f98c1fb92cc4f076100f98d5f0394ee507",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_external_expanded_figures.py",
+      "new_path": "scripts/figures/r1_external_expanded_figures.py",
+      "before_sha256": "b1baa5debfc95a246dd48464be7ef83f18d7f39c821c32adc7e97314e62b70b9",
+      "after_sha256": "363e13f101038592fcf550c8350223d57d2da8e5967bc36f0683d3b01f3ff039",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_external_mechanism_pilots.py",
+      "new_path": "scripts/experiments/r1_external_mechanism_pilots.py",
+      "before_sha256": "da9bde98b9de292471913f3d849d7d8fc3de03ed3c8048d749b444d402d63dc3",
+      "after_sha256": "58aa2952cdf20dbcad094e0b7946d1b2f8c3985d1f23091276cddfe1c6f89d86",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_external_robustness.py",
+      "new_path": "scripts/experiments/r1_external_robustness.py",
+      "before_sha256": "ceaadfed7228dc0f0bdf6bb35595ceefae2656e24dfdf3ce3c23c50bd4861fdc",
+      "after_sha256": "66af3a287bab8c24d75b039c0bc5a0f214df96a56dfe348ee867c167e3bb8e03",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_federation_validation_20261109.py",
+      "new_path": "scripts/experiments/r1_federation_validation_20261109.py",
+      "before_sha256": "0bc5874eb36864e9e98cc03dd6d69958cbff2924e93024a5fc0bb39dea1c1349",
+      "after_sha256": "d1103c1aa0959e433f0c93254c8f301cc6d57631c2215c6fc405fed02efcceb8",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_ensemble_margin.py",
+      "new_path": "scripts/analysis/r1_finalize_ensemble_margin.py",
+      "before_sha256": "c89513d9bf889a2c4f784248ed9fd868d0baf0c247993fb328749f4befa25805",
+      "after_sha256": "09e6eb0b613b171c0f5c019d34cfef2fb18ebd0ac41bfac9b9079cb9e22c5f33",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_external_mechanism_pilots.py",
+      "new_path": "scripts/analysis/r1_finalize_external_mechanism_pilots.py",
+      "before_sha256": "ddc6a43da48293998856f450e856ded48e9d483e0a19c166c2ed683f5043b5c6",
+      "after_sha256": "6b59c80eb92710f21dd091430cd2e23fa2228af08f1149cd7f0bbe47592272a3",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_federation_validation_20261109.py",
+      "new_path": "scripts/analysis/r1_finalize_federation_validation_20261109.py",
+      "before_sha256": "f0c7a4ddcb24050a5ede022da60bbdb619fca11cf6df56c344fb59d947289b61",
+      "after_sha256": "be310ff2216be18f19a6040f544dfbe1125900087114fb23e9e34acb8274f9a3",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_mechanisms.py",
+      "new_path": "scripts/analysis/r1_finalize_mechanisms.py",
+      "before_sha256": "00eff250927fb3a627da461c18489cca6055b40c0f4f86764ecd21c7e046cdec",
+      "after_sha256": "6e8eb70b63506f6efbb994d4f7ebfe46c1729ef4262da87002315a2803914114",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_refined_matched.py",
+      "new_path": "scripts/analysis/r1_finalize_refined_matched.py",
+      "before_sha256": "5e2948db0f70c6be6fc2b4ca43cabbf5dd79e4c8d9e01ee60fd01c13853a19f7",
+      "after_sha256": "d30a610eff9cdd9f4794181e760c2b6bb0a3fddf2fb15e3b00b4c1fd9ed04fb9",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_refined_mechanisms.py",
+      "new_path": "scripts/analysis/r1_finalize_refined_mechanisms.py",
+      "before_sha256": "fd8a1e2b81d1f79aaa3c0472833b29668cac4565de96be24e927dd15918acec2",
+      "after_sha256": "c0ede7c5c9c987ddb6543ba8d73128d14a5a770f084697999457ce6567bcd911",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_refined_robustness.py",
+      "new_path": "scripts/analysis/r1_finalize_refined_robustness.py",
+      "before_sha256": "284137bd816f8603ea8bb0b0ead96c38be5beeac930b0a14d6f5c7363a9a5df7",
+      "after_sha256": "94d7d3f695d8338c55f23b0b578be649d908fc480daab9b07f4b3a43353300db",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_finalize_wind_only.py",
+      "new_path": "scripts/analysis/r1_finalize_wind_only.py",
+      "before_sha256": "a89b7dba9e1d0e7526c1d9dd88772341068519ccfe674dcebc3785fcd02f9e86",
+      "after_sha256": "aa8ce39a345cbe2e0d12318ae25298c349b7ac1719b7176d574e7c01de95843c",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_evaluation.py",
+      "new_path": "scripts/experiments/r1_final_evaluation.py",
+      "before_sha256": "73216378ce3430da4be314bc505f0a542f55debd14d456db3fdb91fbc330ec7d",
+      "after_sha256": "8fe05779170a93cef9ad2d4b34ea55b764aee13ca6d4d21de3e80824f23438e3",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_figures.py",
+      "new_path": "scripts/figures/r1_final_figures.py",
+      "before_sha256": "8f3c9da35f7041fcbcb6b2e2c40969285f2fb6cf1af72122632b4f7a7504cd3d",
+      "after_sha256": "577697266cec8117fcafc791737d0dbd364b1a90ede46dc3df6f70ce60a0ca1f",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_learners.py",
+      "new_path": "scripts/experiments/r1_final_learners.py",
+      "before_sha256": "1104ab64a318e9111906bc197e812ff7258f528e7da6fe5d0d53d3da1b96a712",
+      "after_sha256": "7b7c7b0fba1a4f42d05d06f5ebd5fd8ded3d8d1c53f36f7681e13cc681be5a09",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_mechanisms.py",
+      "new_path": "scripts/experiments/r1_final_mechanisms.py",
+      "before_sha256": "3d5a77a04b8fbe4ff32d2fd02dd67b908711c05428f8d179b57d66c141ed95fe",
+      "after_sha256": "d1f1eca8abd39878d902fd49ed48922a47149cbb53f84519ccbb50a32f4ad2c2",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_mechanism_interventions.py",
+      "new_path": "scripts/experiments/r1_final_mechanism_interventions.py",
+      "before_sha256": "edc5fcaf11f45c415bd4022a77c469cf3408a2474051428e306dd41d096306e2",
+      "after_sha256": "4465a1b3ee4d3d30c0b23a389696a3a071dbf7094d4e42a77e4d37022570145a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_mechanism_worker.py",
+      "new_path": "scripts/experiments/r1_final_mechanism_worker.py",
+      "before_sha256": "e3bd00cb71f52591e70ba17d36b26781ad0a8b611340b4c21675bfc499776099",
+      "after_sha256": "614a596d9132cd5f5e09690ec60f33aa9f1fe8dee52c14bfa471379ef8127fd6",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_robustness.py",
+      "new_path": "scripts/experiments/r1_final_robustness.py",
+      "before_sha256": "3b9bdfedeb24d0c765b274c169e303db006cb42c1dd22f5ef05caa6313a0c5ba",
+      "after_sha256": "b6c4615d929e3779ea5e78725eb7b305cd2c0aa866390f15a5b449b480cdf6b8",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_robustness_worker.py",
+      "new_path": "scripts/experiments/r1_final_robustness_worker.py",
+      "before_sha256": "ed7ab5b82103e86c9e90fc17a05887c4f81094ad2d04c422ac0b3c90b0a2bf1f",
+      "after_sha256": "27886669e6d67be0e32476776d01555f52605265d67b8b84a42ecbdc49fb0a2e",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_screened_diagnostics.py",
+      "new_path": "scripts/experiments/r1_final_screened_diagnostics.py",
+      "before_sha256": "62d7f61a4b392e02856e6bda4eff3920ecfb17e53b09e8238f517aeb515bea2e",
+      "after_sha256": "382c8f303672a44a61ffa1f3734928eac0c36e55573ff637566d5c9ef8b8e82a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_final_screened_interventions.py",
+      "new_path": "scripts/experiments/r1_final_screened_interventions.py",
+      "before_sha256": "0fba1e75214168d81e12c9a96fd3e2c808e04a6e7796a262cc2f2ae1d35b3d6e",
+      "after_sha256": "37ad769b302a5e73ce1b1ad123dfe69ecaf62fe4217edc568cc4543271891008",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_frozen_evaluation.py",
+      "new_path": "scripts/legacy/r1_frozen_evaluation.py",
+      "before_sha256": "e31a22aafca3b700c5315d99ee46b548c7d0f92f0ebdbfbeb318f15ae033d282",
+      "after_sha256": "8e326b5b9701c9e15c7b41ca4ea0cf83186c292d4914fe0e747ecca67ac604f0",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_frozen_mechanisms.py",
+      "new_path": "scripts/legacy/r1_frozen_mechanisms.py",
+      "before_sha256": "07a15536610f35db152302005a2ce17fa04b4e3c904a3469753a5a25126d8ed6",
+      "after_sha256": "d3fa454c51fdde6cfcbec1c1c7c6e48b8e73684cb3176e6e920c5abf44c596ed",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_frozen_robustness.py",
+      "new_path": "scripts/legacy/r1_frozen_robustness.py",
+      "before_sha256": "998a62690dec9d349fb886c2102448fd675c6c33ebe989352638f85469efb803",
+      "after_sha256": "4ae4b32442d0fe5d79fb027e0f5043aa535f95a7e2643e406ac534977d87f9a5",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_guarded_evaluation.py",
+      "new_path": "scripts/experiments/r1_guarded_evaluation.py",
+      "before_sha256": "4d4654f4ece589da8f8ecc5afafed4939796a6f430e3b45af9c7c37700370461",
+      "after_sha256": "1f7c9b5e2c62dc4477db7ed2c5d3e8a0635aadb3583a8fc43179d3541663dce8",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_guarded_learners.py",
+      "new_path": "scripts/experiments/r1_guarded_learners.py",
+      "before_sha256": "15b68041e900627e02cd6051f4f111115aad9644011eba08ec618b1df016c7af",
+      "after_sha256": "a209202b744f7346312346bd790fd19bf8751b4ee771312453cd193e6b5245f2",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_guarded_mechanisms.py",
+      "new_path": "scripts/experiments/r1_guarded_mechanisms.py",
+      "before_sha256": "6f2e1d4a6ce653c2bf4c73ce19a265c5f0b6190bec9100626a327a3e2b670b04",
+      "after_sha256": "bfd664188d051d3aadc19e91c28eb64796d7ec973bd3d4750b425b4b6dba253c",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_layout_figures_20261109.py",
+      "new_path": "scripts/figures/r1_layout_figures_20261109.py",
+      "before_sha256": "615c591398e01dddb3d5ac10c12b83accfb6895e0a484664f0d68b4d4784f7f5",
+      "after_sha256": "06cc0155f957ae7a5bc94d6e6d93d6a2a6ebd756cbf818f1a11c803167a7438b",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_matched_predictor_ci.py",
+      "new_path": "scripts/analysis/r1_matched_predictor_ci.py",
+      "before_sha256": "0e78b2c1d861389116f469e39315aa1b1873646ef068a6eb47be32068388fc8b",
+      "after_sha256": "fee78fba18e5a37e2a0172b565af97efbfc7c3f29df2fbf822bb077b2dec6666",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_merge_refined_sensitivity.py",
+      "new_path": "scripts/legacy/r1_merge_refined_sensitivity.py",
+      "before_sha256": "ae3f0ab4a881cd698266c1b4762434c59dcf3a4e74a24acb65ecb34ea9f49b2d",
+      "after_sha256": "2b2203b9e4e1d4d30a3658edeecf6e492b6c5c6f3335308050dc0db9be93873f",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_minimal_figures.py",
+      "new_path": "scripts/legacy/r1_minimal_figures.py",
+      "before_sha256": "0eb6fb7a16306479b705c5cc21d60557aed0d881b127bf991d1790efb530903e",
+      "after_sha256": "308f93f2c72f4f8dc2df65f2070d6043a90f6c0406cea9d88c328d8755f095fc",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_nomargin_evaluation.py",
+      "new_path": "scripts/legacy/r1_nomargin_evaluation.py",
+      "before_sha256": "feb178b3032d9f83f25c6a802556d25131d024f4a0fa7059a8c9fd059d8b5afa",
+      "after_sha256": "37e3c6a2b3e5a01f47a3b6c06185b3e37f51c7635f06b7702adac02c3e66856c",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_nomargin_mechanisms.py",
+      "new_path": "scripts/legacy/r1_nomargin_mechanisms.py",
+      "before_sha256": "38d98b8ebc3118f140b0816f6adac7118aed68d20493cd8fb22cdbea2188221c",
+      "after_sha256": "9133ed1f54e9069cbf5b7edf348af0570e3b4cf35ba1bd5dfe8822357e2e6d0e",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_prediction_horizon.py",
+      "new_path": "scripts/analysis/r1_prediction_horizon.py",
+      "before_sha256": "f810d5ec5c078d1ee3787be678407f04b41802d542e68ab7080789572d549138",
+      "after_sha256": "54171f9f03fd62bd226809bb8c153e21c95b9c87386405682de7c71c64c53f67",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_predictor_diagnosis.py",
+      "new_path": "scripts/analysis/r1_predictor_diagnosis.py",
+      "before_sha256": "35fc6f5f00cb43be0c416869f27c9627cf422c1cbcb4a1049665982766527a7a",
+      "after_sha256": "4479322af4bd601e83c681904ffa6dac5f0c4b2c0458736101905d8f4eb27475",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_publication.py",
+      "new_path": "scripts/legacy/r1_publication.py",
+      "before_sha256": "8413c49d2e469eece985bd42e55c4c43b2b10effcb5fd32abd2f56c3a2a0a92a",
+      "after_sha256": "e4f136cedb421dcaa7d099435245e722e77acc976d49b05f0b64087f9166bb86",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_diagnostics.py",
+      "new_path": "scripts/legacy/r1_refined_diagnostics.py",
+      "before_sha256": "e37d0477df4f604e01f8df4bc4bbf883ff227ab248aaca40fee510cafae63390",
+      "after_sha256": "56585f01c06adf1c17afe160794e24f44a3ec744a275c699860c2bfdd8875f87",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_evaluation.py",
+      "new_path": "scripts/legacy/r1_refined_evaluation.py",
+      "before_sha256": "c7ae756c9fdc837482e283c261c685c87906c16ce5ee6c32879e0c7363f0fdb3",
+      "after_sha256": "221a36d9fb245288924256ba7bf63997585b35bd86f5a24a4b108dbbc3090c0c",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_matched_worker.py",
+      "new_path": "scripts/legacy/r1_refined_matched_worker.py",
+      "before_sha256": "c37f2611be0ebb53b5247090e55851785702d60effc6e369bee44a48cf6aa889",
+      "after_sha256": "3a5a45afd59cae5d272915af8e24cd834b0c1a839543faaf70ed936b0d7fdc03",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_mechanisms.py",
+      "new_path": "scripts/legacy/r1_refined_mechanisms.py",
+      "before_sha256": "94f52401f8b49a6c68d12774a4c582bcf70201d05875e52ea2f576bd8c949bb5",
+      "after_sha256": "36fa2004c0c53913675575e1faf8294367a13468023bbf3a17d376fe9bf6de8d",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_robustness_worker.py",
+      "new_path": "scripts/legacy/r1_refined_robustness_worker.py",
+      "before_sha256": "3ecd12526ced8180f6267a96f74e2aff0f40e603c6eaf51b3deae36776f4d414",
+      "after_sha256": "ec08a8397ef0eadfbc6819eea6ee5f6f751d9813fcbeed224103a86ede89d754",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_refined_sensitivity_worker.py",
+      "new_path": "scripts/legacy/r1_refined_sensitivity_worker.py",
+      "before_sha256": "b5cce8c7aeaea26eb6bed4587a1358318d70a7e95302edee1853358e4d9cbd75",
+      "after_sha256": "ec15a73d7a766717c4248cae7ca66a009a456eb872217e970d2de43436be6a8a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_regression_tests.py",
+      "new_path": "scripts/tests/r1_regression_tests.py",
+      "before_sha256": "87af98695bcb34fbaad8baae786f58851fe8ef3ca49627d3dbc6e59dc3a50229",
+      "after_sha256": "2bc712f1eabd3577980a21f50c21b3eed749e27f6763be42c43fef00afdbe8fe",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_screen_diagnostic.py",
+      "new_path": "scripts/experiments/r1_screen_diagnostic.py",
+      "before_sha256": "1aa43fc1e2ea172f7cd3bb0f26552b396fbabc0cc18722b86b3d5e733a33f8be",
+      "after_sha256": "3f6cd38764aa0951b76e3352b20f94c7e609bc78f9bdf37cd4711e32505bcccb",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_sc_development_20261109.py",
+      "new_path": "scripts/development/r1_sc_development_20261109.py",
+      "before_sha256": "3606c041d66089744e9a7dd409f739dedaddae97f4c35d6f940149e112669cf1",
+      "after_sha256": "1d3b59f47565eb47254826039dd904fa8e07770a87608dbe61877c6044a1ae9a",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_source_manifest.py",
+      "new_path": "scripts/analysis/r1_source_manifest.py",
+      "before_sha256": "24f4d53a635df1e4c2e085a8eb6dd597e922dab80f669c37967af820546b71a3",
+      "after_sha256": "140023dfd7482aceb9abf0002083afa11d41d81590b3eb04a67b495cac2103e1",
+      "numeric_constants_unchanged": false
+    },
+    {
+      "old_path": "r1_wind_only.py",
+      "new_path": "scripts/experiments/r1_wind_only.py",
+      "before_sha256": "ee0ba9cc3b32cb81c2076637eaaaf30f4ac491b95d8cbbaeb4e0be6aa601f996",
+      "after_sha256": "45109f2c647ed38edb5f64e0324e0fb0ba6bbc2971d1d6d6e9c88d80f9dca99c",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "regenerate_paper_figures.py",
+      "new_path": "scripts/legacy/regenerate_paper_figures.py",
+      "before_sha256": "f3fdeb32e5307f2c7aad11b1a8254851539f4ed298eac913bad6d2428af3becd",
+      "after_sha256": "02d33d58c4c829c3319303c9ccc30147f6613a7f4cd7c0fbcc83b859b6e27521",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "tune_r1.py",
+      "new_path": "scripts/development/tune_r1.py",
+      "before_sha256": "a864d2c4b8a6b05beae3403841cfd2a589225711783f2f11eab58d21104dca73",
+      "after_sha256": "331829ac01e9fa8778f3f0e221640a50cb84b415bcafc1a01d988b8aedea2db8",
+      "numeric_constants_unchanged": true
+    },
+    {
+      "old_path": "r1_experiments.py",
+      "new_path": "r1_experiments.py",
+      "before_sha256": "8dd4fbeaea639d8d70b5db97601f104a9e6e15b79b5cad341bda8b602ed06f06",
+      "after_sha256": "103fc99fa6cfa6a49bd9fd4c6510d7b75c50633efeeb0d90988d3cab7fc27d90",
+      "numeric_constants_unchanged": true
+    }
+  ],
+  "unchanged_algorithm_files": {
+    "config.py": "b686f213db4babe090d2c553e0e5c0b0e589eceecf3b7262f9de8fd7a774c5ce",
+    "controllers.py": "136195d6192d73fcd9ff5a8be38dbecf7fdc0d190ebb44543c8883dfb9ca53e6",
+    "models.py": "b07d165f3a11ec6d57240583d5cb4b3c801e32f502059ade93dba43e1e1195c3",
+    "main.py": "2ce357e8cf13a8f67d5c124a5a2e9aeb0fedf34ca3a950ae5962addf92f57dec",
+    "federated.py": "6f451be87cec90421f948e38a31b26effac825d241f2a26b361dccf8bee727ec",
+    "utils.py": "1e3937bd93d0f619f55d205d94a017649dd685ccd1816f93d19ae6a3ad853962"
+  }
+}

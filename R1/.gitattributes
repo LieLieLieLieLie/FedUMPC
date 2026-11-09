@@ -1,0 +1,2 @@
+# Keep frozen source bytes identical across Git checkout settings and platforms.
+* -text

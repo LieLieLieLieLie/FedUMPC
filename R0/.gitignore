@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+code/results/
+MuJoCo/build/
+MuJoCo/outputs/*.npz
+MuJoCo/outputs/*.log

@@ -1,0 +1,12 @@
+"""Run the partial-client-participation stress test."""
+
+from project_paths import R1_ROOT, artifact_path, source_file, source_digest, verify_source_hash, check_protocol
+
+from paper_experiments import Config, _gen_data, reset_rng, run_participation_stress
+
+
+if __name__ == "__main__":
+    Config.set_mode("fast")
+    reset_rng(100)
+    client_data = _gen_data()
+    run_participation_stress(client_data)
