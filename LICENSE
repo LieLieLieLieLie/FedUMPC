@@ -1,5 +1,5 @@
 PRE-PUBLICATION RESEARCH CODE LICENSE — ALL RIGHTS RESERVED
-Version 1.0 — 13 September 2026
+Version 1.1 — 10 November 2026
 
 Copyright (c) 2026 LieLieLieLieLie. All rights reserved.
 
@@ -7,25 +7,31 @@ Repository: FedUMPC
 
 NOTICE
 
-This repository contains unpublished and/or under-review research software and related materials. It is made visible for research transparency and inspection only. This is NOT an open-source license.
+This repository contains unpublished and/or under-review research software and related materials. It is made visible for research transparency and inspection. Section 2A also permits limited use for peer review. This is NOT an open-source license.
 
 1. NO GENERAL LICENSE GRANT
 
-Except for the limited GitHub platform rights described below, no copyright, patent, trademark, database, or other intellectual-property license is granted, whether expressly, by implication, estoppel, or otherwise.
+Except for the limited peer-review permission in Section 2A and the GitHub platform rights described in Section 3, no copyright, patent, trademark, database, or other intellectual-property license is granted, whether expressly, by implication, estoppel, or otherwise.
 
 2. PROHIBITED USES
 
-Without the copyright holder's prior written permission, you may not copy, reproduce, download for reuse, modify, adapt, translate, merge, publish, distribute, sublicense, sell, commercially exploit, deploy, execute for a project, create derivative works from, train or evaluate machine-learning models on, or otherwise use any original portion of this repository.
+Except as permitted by Section 2A or with the copyright holder's prior written permission, you may not copy, reproduce, download for reuse, modify, adapt, translate, merge, publish, distribute, sublicense, sell, commercially exploit, deploy, execute for a project, create derivative works from, train or evaluate machine-learning models on, or otherwise use any original portion of this repository.
 
-In particular, you may not use the code, documentation, configurations, figures, experimental outputs, or other original materials in any paper, preprint, thesis, benchmark, competition entry, dataset, model, product, service, teaching material, or public or private research project.
+Outside those permissions, you may not use the code, documentation, configurations, figures, experimental outputs, or other original materials in any paper, preprint, thesis, benchmark, competition entry, dataset, model, product, service, teaching material, or public or private research project.
+
+2A. LIMITED PEER-REVIEW PERMISSION
+
+The copyright holder grants reviewers assigned by the journal to review the associated FedUMPC manuscript a limited, nonexclusive, nontransferable permission to download and execute the R1 code, and to make the copies of the accompanying R1 materials reasonably necessary to reproduce or verify the manuscript's results during that review. This permission covers the R1/ directory in commit d2f98bda9f0637b22c98c01f7e15361cd78a8475 even if that snapshot contains an earlier version of this LICENSE. No separate written permission is required for these activities.
+
+Reviewers may communicate their findings confidentially through the journal's peer-review process. This permission does not authorize redistribution of repository materials, publication of review materials, or use of the code for other research, teaching, commercial, or deployment purposes. Section 5 continues to apply to third-party materials.
 
 3. LIMITED GITHUB PLATFORM RIGHTS
 
-GitHub users may exercise only those rights that arise necessarily under the GitHub Terms of Service to view this public repository and use GitHub's built-in functionality, including forking on GitHub where GitHub permits it. Those platform rights do not grant permission to use the materials outside that limited GitHub functionality.
+Apart from the permission in Section 2A, GitHub users may exercise the rights that arise necessarily under the GitHub Terms of Service to view this public repository and use GitHub's built-in functionality, including forking on GitHub where GitHub permits it. Those platform rights do not grant permission to use the materials outside that limited GitHub functionality.
 
 4. WRITTEN PERMISSION
 
-Any permission must be obtained in writing from the copyright holder before use. A request may be made through the repository owner's GitHub profile. Silence or failure to respond does not constitute permission.
+Uses not covered by Section 2A or Section 3 require prior written permission from the copyright holder. A request may be made through the repository owner's GitHub profile. Silence or failure to respond does not constitute permission.
 
 5. THIRD-PARTY MATERIALS
 
